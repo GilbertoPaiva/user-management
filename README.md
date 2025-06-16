@@ -11,7 +11,7 @@ O Pet Connect é um sistema completo implementado seguindo os princípios SOLID,
 ```
 src/
 ├── main/
-│   ├── java/com/userauth/usermanagement/
+│   ├── java/com/petconnect/
 │   │   ├── domain/                    # Camada de Domínio (Entidades e Regras de Negócio)
 │   │   │   ├── user/entity/          # Entidades do usuário
 │   │   │   ├── lojista/entity/       # Entidades do lojista
