@@ -34,6 +34,9 @@ public class SecurityAuditService {
         LoginAttempt attempt;
         if (existingAttempt.isPresent()) {
             attempt = existingAttempt.get();
+            if (!success) {
+                attempt.incrementAttemptCount();
+            }
         } else {
             attempt = LoginAttempt.create(identifier, clientIp, success);
         }
@@ -43,7 +46,6 @@ public class SecurityAuditService {
             recordSecurityEvent(SecurityAuditLog.EventType.LOGIN_SUCCESS, 
                 "Login realizado com sucesso", identifier, clientIp, userAgent, true);
         } else {
-            attempt.incrementAttemptCount();
             
             if (attempt.getAttemptCount() >= MAX_LOGIN_ATTEMPTS) {
                 attempt.blockUntil(LocalDateTime.now().plusMinutes(LOCKOUT_DURATION_MINUTES));
