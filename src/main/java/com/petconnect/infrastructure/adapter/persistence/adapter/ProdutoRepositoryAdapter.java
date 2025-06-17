@@ -40,8 +40,11 @@ public class ProdutoRepositoryAdapter implements ProdutoRepositoryPort {
 
     @Override
     public List<Produto> findByLojistaId(UUID lojistaId) {
-        return produtoJpaRepository.findByLojistaId(lojistaId)
-                .stream()
+        List<UUID> produtoIds = produtoJpaRepository.findIdsByLojistaId(lojistaId);
+        return produtoIds.stream()
+                .map(id -> produtoJpaRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(produtoMapper::toDomainEntity)
                 .collect(Collectors.toList());
     }
@@ -78,7 +81,7 @@ public class ProdutoRepositoryAdapter implements ProdutoRepositoryPort {
     @Override
     public Page<Produto> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
             String nome, String description, Pageable pageable) {
-        return produtoJpaRepository.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(nome, pageable)
+        return produtoJpaRepository.findByNomeOrDescriptionContaining(nome, pageable)
                 .map(produtoMapper::toDomainEntity);
     }
 }

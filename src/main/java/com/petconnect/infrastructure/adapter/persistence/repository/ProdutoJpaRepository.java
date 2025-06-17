@@ -15,16 +15,25 @@ import java.util.UUID;
 @Repository
 public interface ProdutoJpaRepository extends JpaRepository<ProdutoJpaEntity, UUID> {
     
-    List<ProdutoJpaEntity> findByLojistaId(UUID lojistaId);
-    Page<ProdutoJpaEntity> findByLojistaId(UUID lojistaId, Pageable pageable);
+    @Query("SELECT p.id FROM ProdutoJpaEntity p WHERE p.lojistaId = :lojistaId")
+    List<UUID> findIdsByLojistaId(@Param("lojistaId") UUID lojistaId);
     
-    // Métodos de busca avançada
-    Page<ProdutoJpaEntity> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-    Page<ProdutoJpaEntity> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+    @Query("SELECT p FROM ProdutoJpaEntity p WHERE p.lojistaId = :lojistaId")
+    Page<ProdutoJpaEntity> findByLojistaId(@Param("lojistaId") UUID lojistaId, Pageable pageable);
+    
+    @Query("SELECT p FROM ProdutoJpaEntity p WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%'))")
+    Page<ProdutoJpaEntity> findByNomeContainingIgnoreCase(@Param("nome") String nome, Pageable pageable);
+    
+    @Query("SELECT p FROM ProdutoJpaEntity p WHERE p.price BETWEEN :minPrice AND :maxPrice")
+    Page<ProdutoJpaEntity> findByPriceBetween(@Param("minPrice") BigDecimal minPrice, 
+                                            @Param("maxPrice") BigDecimal maxPrice, 
+                                            Pageable pageable);
     
     @Query("SELECT p FROM ProdutoJpaEntity p WHERE " +
            "LOWER(p.nome) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))")
-    Page<ProdutoJpaEntity> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-        @Param("search") String search, Pageable pageable);
+    Page<ProdutoJpaEntity> findByNomeOrDescriptionContaining(@Param("search") String search, Pageable pageable);
+    
+    @Query("SELECT COUNT(p.id) FROM ProdutoJpaEntity p WHERE p.lojistaId = :lojistaId")
+    long countByLojistaId(@Param("lojistaId") UUID lojistaId);
 }

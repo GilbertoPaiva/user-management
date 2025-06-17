@@ -38,8 +38,11 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
 
     @Override
     public List<Servico> findByVeterinarioId(UUID veterinarioId) {
-        return servicoJpaRepository.findByVeterinarioId(veterinarioId)
-                .stream()
+        List<UUID> servicoIds = servicoJpaRepository.findIdsByVeterinarioId(veterinarioId);
+        return servicoIds.stream()
+                .map(id -> servicoJpaRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(servicoMapper::toDomainEntity)
                 .collect(Collectors.toList());
     }
@@ -76,7 +79,7 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
     @Override
     public Page<Servico> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
             String nome, String description, Pageable pageable) {
-        return servicoJpaRepository.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(nome, pageable)
+        return servicoJpaRepository.findByNomeOrDescriptionContaining(nome, pageable)
                 .map(servicoMapper::toDomainEntity);
     }
 }

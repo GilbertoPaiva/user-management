@@ -1,28 +1,24 @@
 package com.petconnect.infrastructure.adapter.persistence.entity;
 
+import com.petconnect.domain.shared.entity.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "produtos")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProdutoJpaEntity {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class ProdutoJpaEntity extends AuditableEntity {
     
     @Column(name = "lojista_id", nullable = false)
     private UUID lojistaId;
@@ -41,12 +37,4 @@ public class ProdutoJpaEntity {
     
     @Column(name = "unit_of_measure")
     private String unitOfMeasure;
-    
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

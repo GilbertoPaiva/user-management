@@ -15,16 +15,25 @@ import java.util.UUID;
 @Repository
 public interface ServicoJpaRepository extends JpaRepository<ServicoJpaEntity, UUID> {
     
-    List<ServicoJpaEntity> findByVeterinarioId(UUID veterinarioId);
-    Page<ServicoJpaEntity> findByVeterinarioId(UUID veterinarioId, Pageable pageable);
+    @Query("SELECT s.id FROM ServicoJpaEntity s WHERE s.veterinarioId = :veterinarioId")
+    List<UUID> findIdsByVeterinarioId(@Param("veterinarioId") UUID veterinarioId);
     
-    // Métodos de busca avançada
-    Page<ServicoJpaEntity> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-    Page<ServicoJpaEntity> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+    @Query("SELECT s FROM ServicoJpaEntity s WHERE s.veterinarioId = :veterinarioId")
+    Page<ServicoJpaEntity> findByVeterinarioId(@Param("veterinarioId") UUID veterinarioId, Pageable pageable);
+    
+    @Query("SELECT s FROM ServicoJpaEntity s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))")
+    Page<ServicoJpaEntity> findByNomeContainingIgnoreCase(@Param("nome") String nome, Pageable pageable);
+    
+    @Query("SELECT s FROM ServicoJpaEntity s WHERE s.price BETWEEN :minPrice AND :maxPrice")
+    Page<ServicoJpaEntity> findByPriceBetween(@Param("minPrice") BigDecimal minPrice, 
+                                            @Param("maxPrice") BigDecimal maxPrice, 
+                                            Pageable pageable);
     
     @Query("SELECT s FROM ServicoJpaEntity s WHERE " +
            "LOWER(s.nome) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(s.description) LIKE LOWER(CONCAT('%', :search, '%'))")
-    Page<ServicoJpaEntity> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-        @Param("search") String search, Pageable pageable);
+    Page<ServicoJpaEntity> findByNomeOrDescriptionContaining(@Param("search") String search, Pageable pageable);
+    
+    @Query("SELECT COUNT(s.id) FROM ServicoJpaEntity s WHERE s.veterinarioId = :veterinarioId")
+    long countByVeterinarioId(@Param("veterinarioId") UUID veterinarioId);
 }

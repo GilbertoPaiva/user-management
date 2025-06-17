@@ -1,29 +1,24 @@
 package com.petconnect.infrastructure.adapter.persistence.entity;
 
+import com.petconnect.domain.shared.entity.AuditableEntity;
 import com.petconnect.domain.user.entity.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserJpaEntity {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class UserJpaEntity extends AuditableEntity {
     
     @Column(unique = true, nullable = false)
     private String username;
@@ -84,12 +79,4 @@ public class UserJpaEntity {
     private String businessHours;
     
     private String guardian;
-    
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

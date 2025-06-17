@@ -55,8 +55,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public List<User> findByUserType(String userType) {
-        return userJpaRepository.findByUserType(com.petconnect.domain.user.entity.UserType.valueOf(userType))
-                .stream()
+        List<UUID> userIds = userJpaRepository.findIdsByUserType(com.petconnect.domain.user.entity.UserType.valueOf(userType));
+        return userIds.stream()
+                .map(id -> userJpaRepository.findById(id))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(userMapper::toDomainEntity)
                 .collect(Collectors.toList());
     }

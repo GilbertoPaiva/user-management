@@ -16,13 +16,22 @@ import java.util.UUID;
 @Repository
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
     
-    Optional<UserJpaEntity> findByUsername(String username);
-    Optional<UserJpaEntity> findByEmail(String email);
-    List<UserJpaEntity> findByUserType(UserType userType);
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
+    @Query("SELECT u FROM UserJpaEntity u WHERE u.username = :username")
+    Optional<UserJpaEntity> findByUsername(@Param("username") String username);
     
-    @Query("SELECT COUNT(u) FROM UserJpaEntity u WHERE u.userType = :userType")
+    @Query("SELECT u FROM UserJpaEntity u WHERE u.email = :email")
+    Optional<UserJpaEntity> findByEmail(@Param("email") String email);
+    
+    @Query("SELECT u.id FROM UserJpaEntity u WHERE u.userType = :userType")
+    List<UUID> findIdsByUserType(@Param("userType") UserType userType);
+    
+    @Query("SELECT CASE WHEN COUNT(u.id) > 0 THEN true ELSE false END FROM UserJpaEntity u WHERE u.username = :username")
+    boolean existsByUsername(@Param("username") String username);
+    
+    @Query("SELECT CASE WHEN COUNT(u.id) > 0 THEN true ELSE false END FROM UserJpaEntity u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
+    
+    @Query("SELECT COUNT(u.id) FROM UserJpaEntity u WHERE u.userType = :userType")
     long countByUserType(@Param("userType") UserType userType);
     
     @Query("SELECT u FROM UserJpaEntity u WHERE " +

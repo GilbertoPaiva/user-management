@@ -9,20 +9,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public UserJpaEntity toJpaEntity(User user) {
+        public UserJpaEntity toJpaEntity(User user) {
         if (user == null) return null;
 
         UserJpaEntity.UserJpaEntityBuilder builder = UserJpaEntity.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .fullName(user.getFullName())
                 .userType(user.getUserType())
                 .active(user.isActive())
-                .roles(user.getRoles())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt());
+                .roles(user.getRoles());
 
         if (user.getSecurityQuestions() != null) {
             SecurityQuestions sq = user.getSecurityQuestions();
@@ -31,7 +28,7 @@ public class UserMapper {
                    .securityQuestion2(sq.getQuestion2())
                    .securityAnswer2(sq.getAnswer2())
                    .securityQuestion3(sq.getQuestion3())
-                   .securityAnswer3(sq.getAnswer3());
+                                      .securityAnswer3(sq.getAnswer3());
         }
 
         if (user.getUserProfile() != null) {
@@ -46,7 +43,13 @@ public class UserMapper {
                    .guardian(up.getGuardian());
         }
 
-        return builder.build();
+        UserJpaEntity entity = builder.build();
+        
+        if (user.getId() != null) {
+            entity.setId(user.getId());
+        }
+        
+        return entity;
     }
 
     public User toDomainEntity(UserJpaEntity jpaEntity) {

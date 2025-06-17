@@ -8,17 +8,20 @@ import org.springframework.stereotype.Component;
 public class ServicoMapper {
 
     public ServicoJpaEntity toJpaEntity(Servico servico) {
-        if (servico == null) return null;
+                if (servico == null) return null;
 
-        return ServicoJpaEntity.builder()
-                .id(servico.getId())
+        ServicoJpaEntity entity = ServicoJpaEntity.builder()
                 .veterinarioId(servico.getVeterinarioId())
                 .nome(servico.getNome())
                 .description(servico.getDescription())
                 .price(servico.getPrice())
-                .createdAt(servico.getCreatedAt())
-                .updatedAt(servico.getUpdatedAt())
                 .build();
+        
+        if (servico.getId() != null) {
+            entity.setId(servico.getId());
+        }
+        
+        return entity;
     }
 
     public Servico toDomainEntity(ServicoJpaEntity jpaEntity) {

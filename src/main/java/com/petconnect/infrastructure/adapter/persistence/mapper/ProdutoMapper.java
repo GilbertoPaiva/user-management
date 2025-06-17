@@ -8,25 +8,28 @@ import org.springframework.stereotype.Component;
 public class ProdutoMapper {
 
     public ProdutoJpaEntity toJpaEntity(Produto produto) {
-        if (produto == null) return null;
+                if (produto == null) return null;
 
-        return ProdutoJpaEntity.builder()
-                .id(produto.getId())
+        ProdutoJpaEntity entity = ProdutoJpaEntity.builder()
                 .lojistaId(produto.getLojistaId())
                 .nome(produto.getNome())
                 .description(produto.getDescription())
                 .price(produto.getPrice())
                 .photoUrl(produto.getPhotoUrl())
                 .unitOfMeasure(produto.getUnitOfMeasure())
-                .createdAt(produto.getCreatedAt())
-                .updatedAt(produto.getUpdatedAt())
                 .build();
+        
+        if (produto.getId() != null) {
+            entity.setId(produto.getId());
+        }
+        
+        return entity;
     }
 
     public Produto toDomainEntity(ProdutoJpaEntity jpaEntity) {
         if (jpaEntity == null) return null;
 
-        return Produto.builder()
+                return Produto.builder()
                 .id(jpaEntity.getId())
                 .lojistaId(jpaEntity.getLojistaId())
                 .nome(jpaEntity.getNome())
