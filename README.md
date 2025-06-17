@@ -61,7 +61,7 @@ src/
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Java 17**
+- **Java 21**
 - **Spring Boot 3.x**
 - **Spring Security** - Autenticação e autorização
 - **Spring Data JPA** - Persistência de dados
@@ -85,14 +85,13 @@ src/
 ## 🔧 Como Executar
 
 ### Pré-requisitos
-- Java 17 ou superior
+- Java 21 ou superior
 - Maven 3.6 ou superior
 
 ### Passos para execução
 1. Clone o repositório
-2. Execute: `./mvnw clean compile` (corrigir erros de compilação)
-3. Execute: `./mvnw spring-boot:run`
-4. Acesse: `http://localhost:8080`
+2. Execute: `./mvnw spring-boot:run`
+3. Acesse: `http://localhost:8080`
 
 ## 🌐 Endpoints da API
 
@@ -116,16 +115,7 @@ src/
 
 ## 🔄 Próximos Passos para Completar
 
-### 1. Correções Necessárias (PRIORITÁRIO)
-```bash
-# Erro principal: Lombok não está gerando métodos
-# Soluções:
-# 1. Verificar se Lombok está configurado no IDE
-# 2. Adicionar plugin do Lombok no Maven
-# 3. Verificar annotations @Data, @Builder, etc.
-```
-
-### 2. Funcionalidades Pendentes
+### 1. Funcionalidades Pendentes
 - [ ] Implementar CRUD de Serviços (Veterinários)
 - [ ] Dashboard do Tutor (visualização de produtos/serviços)
 - [ ] Sistema de avaliações
@@ -135,7 +125,7 @@ src/
 - [ ] Geolocalização
 - [ ] Sistema de pagamento
 
-### 3. Melhorias Técnicas
+### 2. Melhorias Técnicas
 - [ ] Implementar JWT para autenticação
 - [ ] Testes unitários e de integração
 - [ ] Documentação Swagger/OpenAPI
@@ -145,7 +135,7 @@ src/
 - [ ] Cache com Redis
 - [ ] Mensageria com RabbitMQ
 
-### 4. Frontend Completo
+### 3. Frontend Completo
 - [ ] Aplicação React/Angular/Vue
 - [ ] Páginas de login/cadastro
 - [ ] Dashboards específicos por perfil
@@ -196,14 +186,12 @@ src/
 1. **Banco H2**: Dados são perdidos ao reiniciar (ideal para desenvolvimento)
 2. **Sem JWT**: Sistema usa Spring Security básico
 3. **Frontend**: Apenas landing page estática
-4. **Erros de Compilação**: Lombok precisa ser configurado corretamente
 
 ## 📞 Suporte
 
 Para completar a implementação:
-1. Corrigir erros do Lombok
-2. Implementar funcionalidades pendentes
-3. Criar frontend completo
-4. Adicionar testes
+1. Implementar funcionalidades pendentes
+2. Criar frontend completo
+3. Adicionar testes
 
 Este projeto fornece uma base sólida seguindo as melhores práticas de arquitetura para um sistema completo de gestão pet.
