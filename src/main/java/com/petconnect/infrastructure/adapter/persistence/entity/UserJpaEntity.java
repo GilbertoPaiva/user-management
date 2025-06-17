@@ -2,12 +2,14 @@ package com.petconnect.infrastructure.adapter.persistence.entity;
 
 import com.petconnect.domain.shared.entity.AuditableEntity;
 import com.petconnect.domain.user.entity.UserType;
+import com.petconnect.infrastructure.security.encryption.SensitiveDataEncryptionListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -15,9 +17,10 @@ import java.util.Set;
 @Table(name = "users")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(SensitiveDataEncryptionListener.class)
 public class UserJpaEntity extends AuditableEntity {
     
     @Column(unique = true, nullable = false)

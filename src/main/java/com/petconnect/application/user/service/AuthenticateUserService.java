@@ -28,7 +28,8 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
             throw new BadRequestException("Usuário inativo");
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        // Se password está vazio, é refresh token - apenas verificar se usuário existe e está ativo
+        if (password != null && !password.isEmpty() && !passwordEncoder.matches(password, user.getPassword())) {
             throw new BadRequestException("Email ou senha inválidos");
         }
 

@@ -1,6 +1,6 @@
 package com.petconnect.infrastructure.adapter.web.controller;
 
-import com.petconnect.application.user.usecase.AuthenticateUserUseCase;
+import com.petconnect.application.user.service.AuthenticateUserService;
 import com.petconnect.application.user.usecase.CreateUserCommand;
 import com.petconnect.application.user.usecase.ResetPasswordUseCase;
 import com.petconnect.domain.user.entity.SecurityQuestions;
@@ -8,14 +8,15 @@ import com.petconnect.domain.user.entity.User;
 import com.petconnect.domain.user.entity.UserProfile;
 import com.petconnect.infrastructure.adapter.web.dto.*;
 import com.petconnect.infrastructure.adapter.web.shared.dto.ApiResponse;
+import com.petconnect.infrastructure.security.interceptor.SecurityInterceptor;
 import com.petconnect.infrastructure.security.jwt.JwtService;
 import com.petconnect.infrastructure.security.service.CustomUserDetailsService;
+import com.petconnect.infrastructure.security.service.SecureAuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +27,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class AuthController {
-
-    private final AuthenticateUserUseCase authenticateUserUseCase;
+    
+    private final AuthenticateUserService authenticateUserService;
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
+    private final SecureAuthenticationService secureAuthenticationService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody CreateUserRequest request) {
@@ -66,7 +67,7 @@ public class AuthController {
                 .userProfile(userProfile)
                 .build();
 
-        User user = authenticateUserUseCase.createUser(command);
+        User user = authenticateUserService.createUser(command);
         
         // Gerar tokens JWT
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
@@ -88,26 +89,29 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
-        // Autenticar via Spring Security
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request, 
+                                                          HttpServletRequest httpRequest) {
+        // Obter IP do cliente via SecurityInterceptor
+        String clientIp = SecurityInterceptor.getCurrentClientIp();
+        if (clientIp == null) {
+            clientIp = httpRequest.getRemoteAddr();
+        }
         
-        // Buscar usuário e gerar tokens
-        User user = authenticateUserUseCase.execute(request.getEmail(), request.getPassword());
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        // Usar o serviço de autenticação segura
+        SecureAuthenticationService.AuthenticationResult result = 
+            secureAuthenticationService.authenticateUser(request.getEmail(), request.getPassword(), clientIp);
         
-        String accessToken = jwtService.generateTokenWithUserInfo(
-                userDetails, 
-                user.getId().toString(), 
-                user.getUserType().name()
-        );
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        if (!result.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(result.getErrorMessage()));
+        }
+        
+        // Buscar dados completos do usuário para resposta
+        User user = authenticateUserService.execute(request.getEmail(), request.getPassword());
         
         AuthResponse response = AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .accessToken(result.getAccessToken())
+                .refreshToken(result.getRefreshToken())
                 .user(mapToUserInfo(user))
                 .build();
 
@@ -132,34 +136,26 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        String refreshToken = request.getRefreshToken();
-        String userEmail = jwtService.extractUsername(refreshToken);
+        // Usar o serviço de autenticação segura para refresh token
+        SecureAuthenticationService.AuthenticationResult result = 
+            secureAuthenticationService.refreshToken(request.getRefreshToken());
         
-        if (userEmail != null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                CustomUserDetailsService.CustomUserPrincipal userPrincipal = 
-                    (CustomUserDetailsService.CustomUserPrincipal) userDetails;
-                
-                String newAccessToken = jwtService.generateTokenWithUserInfo(
-                        userDetails,
-                        userPrincipal.getUserId(),
-                        userPrincipal.getUserType()
-                );
-                
-                AuthResponse response = AuthResponse.builder()
-                        .accessToken(newAccessToken)
-                        .refreshToken(refreshToken)
-                        .user(mapToUserInfo(userPrincipal.getUser()))
-                        .build();
-                
-                return ResponseEntity.ok(ApiResponse.success("Token renovado com sucesso", response));
-            }
+        if (!result.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error(result.getErrorMessage()));
         }
         
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error("Token de refresh inválido"));
+        // Buscar dados completos do usuário para resposta
+        String userEmail = jwtService.extractUsername(request.getRefreshToken());
+        User user = authenticateUserService.execute(userEmail, ""); // Password não necessária para refresh
+        
+        AuthResponse response = AuthResponse.builder()
+                .accessToken(result.getAccessToken())
+                .refreshToken(result.getRefreshToken())
+                .user(mapToUserInfo(user))
+                .build();
+        
+        return ResponseEntity.ok(ApiResponse.success("Token renovado com sucesso", response));
     }
 
     private AuthResponse.UserInfo mapToUserInfo(User user) {
