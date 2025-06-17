@@ -6,14 +6,17 @@ import com.petconnect.application.user.usecase.ResetPasswordUseCase;
 import com.petconnect.domain.user.entity.SecurityQuestions;
 import com.petconnect.domain.user.entity.User;
 import com.petconnect.domain.user.entity.UserProfile;
-import com.petconnect.infrastructure.adapter.web.dto.CreateUserRequest;
-import com.petconnect.infrastructure.adapter.web.dto.LoginRequest;
-import com.petconnect.infrastructure.adapter.web.dto.UserResponse;
+import com.petconnect.infrastructure.adapter.web.dto.*;
 import com.petconnect.infrastructure.adapter.web.shared.dto.ApiResponse;
+import com.petconnect.infrastructure.security.jwt.JwtService;
+import com.petconnect.infrastructure.security.service.CustomUserDetailsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -26,9 +29,12 @@ public class AuthController {
 
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody CreateUserRequest request) {
         SecurityQuestions securityQuestions = SecurityQuestions.builder()
                 .question1(request.getSecurityQuestion1())
                 .answer1(request.getSecurityAnswer1())
@@ -61,16 +67,49 @@ public class AuthController {
                 .build();
 
         User user = authenticateUserUseCase.createUser(command);
-        UserResponse response = mapToUserResponse(user);
+        
+        // Gerar tokens JWT
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        String accessToken = jwtService.generateTokenWithUserInfo(
+                userDetails, 
+                user.getId().toString(), 
+                user.getUserType().name()
+        );
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        
+        AuthResponse response = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserInfo(user))
+                .build();
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Usuário criado com sucesso", response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        // Autenticar via Spring Security
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        
+        // Buscar usuário e gerar tokens
         User user = authenticateUserUseCase.execute(request.getEmail(), request.getPassword());
-        UserResponse response = mapToUserResponse(user);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        
+        String accessToken = jwtService.generateTokenWithUserInfo(
+                userDetails, 
+                user.getId().toString(), 
+                user.getUserType().name()
+        );
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        
+        AuthResponse response = AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserInfo(user))
+                .build();
 
         return ResponseEntity.ok(ApiResponse.success("Login realizado com sucesso", response));
     }
@@ -91,8 +130,40 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Senha redefinida com sucesso"));
     }
 
-    private UserResponse mapToUserResponse(User user) {
-        UserResponse.UserResponseBuilder builder = UserResponse.builder()
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+        String userEmail = jwtService.extractUsername(refreshToken);
+        
+        if (userEmail != null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+            
+            if (jwtService.isTokenValid(refreshToken, userDetails)) {
+                CustomUserDetailsService.CustomUserPrincipal userPrincipal = 
+                    (CustomUserDetailsService.CustomUserPrincipal) userDetails;
+                
+                String newAccessToken = jwtService.generateTokenWithUserInfo(
+                        userDetails,
+                        userPrincipal.getUserId(),
+                        userPrincipal.getUserType()
+                );
+                
+                AuthResponse response = AuthResponse.builder()
+                        .accessToken(newAccessToken)
+                        .refreshToken(refreshToken)
+                        .user(mapToUserInfo(userPrincipal.getUser()))
+                        .build();
+                
+                return ResponseEntity.ok(ApiResponse.success("Token renovado com sucesso", response));
+            }
+        }
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Token de refresh inválido"));
+    }
+
+    private AuthResponse.UserInfo mapToUserInfo(User user) {
+        AuthResponse.UserInfo.UserInfoBuilder builder = AuthResponse.UserInfo.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())

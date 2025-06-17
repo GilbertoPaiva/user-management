@@ -10,6 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,5 +61,24 @@ public class ProdutoRepositoryAdapter implements ProdutoRepositoryPort {
     @Override
     public void deleteById(UUID id) {
         produtoJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Produto> findByNomeContainingIgnoreCase(String nome, Pageable pageable) {
+        return produtoJpaRepository.findByNomeContainingIgnoreCase(nome, pageable)
+                .map(produtoMapper::toDomainEntity);
+    }
+
+    @Override
+    public Page<Produto> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
+        return produtoJpaRepository.findByPriceBetween(minPrice, maxPrice, pageable)
+                .map(produtoMapper::toDomainEntity);
+    }
+
+    @Override
+    public Page<Produto> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String nome, String description, Pageable pageable) {
+        return produtoJpaRepository.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(nome, pageable)
+                .map(produtoMapper::toDomainEntity);
     }
 }

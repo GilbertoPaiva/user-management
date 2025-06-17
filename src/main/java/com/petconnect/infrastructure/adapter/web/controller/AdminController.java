@@ -5,6 +5,8 @@ import com.petconnect.domain.user.port.UserRepositoryPort;
 import com.petconnect.infrastructure.adapter.web.dto.UserResponse;
 import com.petconnect.infrastructure.adapter.web.shared.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ public class AdminController {
     private final UserRepositoryPort userRepository;
 
     @GetMapping("/dashboard")
+    @Cacheable(value = "dashboard-stats", key = "'admin-dashboard'")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard() {
         Map<String, Object> dashboard = new HashMap<>();
         

@@ -1,6 +1,7 @@
 package com.petconnect.infrastructure.adapter.web.dto;
 
 import com.petconnect.domain.user.entity.UserType;
+import com.petconnect.infrastructure.validation.StrongPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,7 @@ public class CreateUserRequest {
     private String email;
     
     @NotBlank(message = "Password é obrigatório")
+    @StrongPassword
     private String password;
     
     @NotBlank(message = "Nome completo é obrigatório")
@@ -38,6 +40,7 @@ public class CreateUserRequest {
     private String securityQuestion3;
     private String securityAnswer3;
     
+    // UserProfile fields
     private String nome;
     private String location;
     private String contactNumber;
