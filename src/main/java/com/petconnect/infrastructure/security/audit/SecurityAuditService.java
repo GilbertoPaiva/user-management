@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-/**
- * Serviço para auditoria de segurança
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,9 +24,6 @@ public class SecurityAuditService {
     private static final int LOCKOUT_DURATION_MINUTES = 30;
     private static final int ATTEMPT_RESET_MINUTES = 15;
     
-    /**
-     * Registra tentativa de login
-     */
     public void recordLoginAttempt(String identifier, boolean success) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
@@ -46,12 +40,10 @@ public class SecurityAuditService {
         }
         
         if (success) {
-            // Reset contador em caso de sucesso
             attempt.resetAttemptCount();
             recordSecurityEvent(SecurityAuditLog.EventType.LOGIN_SUCCESS, 
                 "Login realizado com sucesso", identifier, clientIp, userAgent, true);
         } else {
-            // Incrementar contador de tentativas falhas
             attempt.incrementAttemptCount();
             
             if (attempt.getAttemptCount() >= MAX_LOGIN_ATTEMPTS) {
@@ -69,9 +61,6 @@ public class SecurityAuditService {
         loginAttemptRepository.save(attempt);
     }
     
-    /**
-     * Verifica se usuário está bloqueado
-     */
     public boolean isUserBlocked(String identifier) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         Optional<LoginAttempt> attempt = 
@@ -80,12 +69,10 @@ public class SecurityAuditService {
         if (attempt.isPresent()) {
             LoginAttempt loginAttempt = attempt.get();
             
-            // Verificar se ainda está bloqueado
             if (loginAttempt.isBlocked()) {
                 return true;
             }
             
-            // Se o bloqueio expirou, limpar automaticamente
             if (loginAttempt.getBlockedUntil() != null && 
                 LocalDateTime.now().isAfter(loginAttempt.getBlockedUntil())) {
                 loginAttempt.resetAttemptCount();
@@ -96,9 +83,6 @@ public class SecurityAuditService {
         return false;
     }
     
-    /**
-     * Verifica se pode tentar login (não excedeu limite)
-     */
     public boolean canAttemptLogin(String identifier) {
         if (isUserBlocked(identifier)) {
             return false;
@@ -111,7 +95,6 @@ public class SecurityAuditService {
         if (attempt.isPresent()) {
             LoginAttempt loginAttempt = attempt.get();
             
-            // Reset contador se tempo de reset passou
             if (loginAttempt.getAttemptTimestamp() != null &&
                 loginAttempt.getAttemptTimestamp().isBefore(
                     LocalDateTime.now().minusMinutes(ATTEMPT_RESET_MINUTES))) {
@@ -126,9 +109,6 @@ public class SecurityAuditService {
         return true;
     }
     
-    /**
-     * Obtém tempo restante de bloqueio em minutos
-     */
     public long getRemainingLockoutMinutes(String identifier) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         Optional<LoginAttempt> attempt = 
@@ -141,9 +121,6 @@ public class SecurityAuditService {
         return 0;
     }
     
-    /**
-     * Desbloqueia usuário manualmente (para administradores)
-     */
     public boolean unlockUser(String identifier, String adminUser) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         Optional<LoginAttempt> attempt = 
@@ -164,9 +141,6 @@ public class SecurityAuditService {
         return false;
     }
     
-    /**
-     * Registra evento de segurança
-     */
     private void recordSecurityEvent(SecurityAuditLog.EventType eventType, String description, 
                                    String userIdentifier, String ipAddress, String userAgent, 
                                    boolean success) {
@@ -183,9 +157,6 @@ public class SecurityAuditService {
                 eventType, userIdentifier, ipAddress, success);
     }
     
-    /**
-     * Registra acesso não autorizado
-     */
     public void recordUnauthorizedAccess(String operation, String details) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
@@ -194,9 +165,6 @@ public class SecurityAuditService {
             operation + ": " + details, "UNKNOWN", clientIp, userAgent, false);
     }
     
-    /**
-     * Registra violação de segurança
-     */
     public void recordSecurityViolation(String violationType, String details) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
@@ -205,9 +173,6 @@ public class SecurityAuditService {
             violationType + ": " + details, "UNKNOWN", clientIp, userAgent, false);
     }
     
-    /**
-     * Registra operação sensível
-     */
     public void recordSensitiveOperation(String operation, String userIdentifier) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
@@ -216,9 +181,6 @@ public class SecurityAuditService {
             "Operação sensível: " + operation, userIdentifier, clientIp, userAgent, true);
     }
     
-    /**
-     * Registra logout
-     */
     public void recordLogout(String userIdentifier) {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
