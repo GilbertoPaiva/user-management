@@ -17,7 +17,7 @@ public interface ProdutoRepositoryPort {
     void deleteById(UUID id);
     Page<Produto> findAll(Pageable pageable);
     
-    // Métodos de busca avançada
+
     Page<Produto> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
     Page<Produto> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
     Page<Produto> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(

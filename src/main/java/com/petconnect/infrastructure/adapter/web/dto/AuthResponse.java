@@ -34,7 +34,7 @@ public class AuthResponse {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         
-        // UserProfile fields
+
         private String nome;
         private String location;
         private String contactNumber;

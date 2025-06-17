@@ -28,7 +28,6 @@ public class SecurityAuditService {
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         String userAgent = SecurityInterceptor.getCurrentUserAgent();
         
-        // Buscar ou criar registro de tentativa
         Optional<LoginAttempt> existingAttempt = 
             loginAttemptRepository.findByUserIdentifierAndIpAddress(identifier, clientIp);
         

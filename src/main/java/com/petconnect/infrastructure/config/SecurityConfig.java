@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
+
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/public/**",
@@ -68,13 +68,13 @@ public class SecurityConfig {
                                 "/error"
                         ).permitAll()
                         
-                        // Endpoints específicos por role
+
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/veterinario/**").hasAnyRole("VETERINARIO", "ADMIN")
                         .requestMatchers("/api/lojista/**").hasAnyRole("LOJISTA", "ADMIN")
                         .requestMatchers("/api/tutor/**").hasAnyRole("TUTOR", "ADMIN")
                         
-                        // Qualquer outra requisição precisa de autenticação
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

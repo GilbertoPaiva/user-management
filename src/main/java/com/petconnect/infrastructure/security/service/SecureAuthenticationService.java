@@ -32,7 +32,7 @@ public class SecureAuthenticationService {
     private final SecurityAuditService securityAuditService;
     private final DataEncryptionService dataEncryptionService;
     
-    // Padrões para validação de entrada
+
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
         "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._-]{3,50}$");
@@ -42,10 +42,10 @@ public class SecureAuthenticationService {
      */
     public AuthenticationResult authenticateUser(String identifier, String password, String clientIp) {
         try {
-            // Validar entrada
+
             validateAuthenticationInput(identifier, password);
             
-            // Verificar se usuário está bloqueado
+
             if (securityAuditService.isUserBlocked(identifier)) {
                 long remainingMinutes = securityAuditService.getRemainingLockoutMinutes(identifier);
                 securityAuditService.recordUnauthorizedAccess("LOGIN", 
@@ -58,7 +58,7 @@ public class SecureAuthenticationService {
                     .build();
             }
             
-            // Verificar se pode tentar login
+
             if (!securityAuditService.canAttemptLogin(identifier)) {
                 return AuthenticationResult.builder()
                     .success(false)
@@ -66,19 +66,19 @@ public class SecureAuthenticationService {
                     .build();
             }
             
-            // Tentar autenticação
+
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(identifier, password)
             );
             
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             
-            // Gerar tokens JWT
+
             String accessToken = jwtService.generateTokenWithUserInfo(
                 userDetails, userDetails.getUsername(), "USER");
             String refreshToken = jwtService.generateRefreshToken(userDetails);
             
-            // Registrar sucesso
+
             securityAuditService.recordLoginAttempt(identifier, true);
             
             log.info("Login bem-sucedido para usuário: {} de IP: {}", 
@@ -89,7 +89,7 @@ public class SecureAuthenticationService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .username(userDetails.getUsername())
-                .expiresIn(86400L) // 24 horas
+                .expiresIn(86400L)
                 .build();
                 
         } catch (BadCredentialsException e) {
@@ -137,7 +137,7 @@ public class SecureAuthenticationService {
                 .build();
         }
         
-        // Calcular força da senha
+
         int strength = calculatePasswordStrength(password);
         
         Map<String, Boolean> criteria = new HashMap<>();
@@ -166,10 +166,10 @@ public class SecureAuthenticationService {
             throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
         }
         
-        // Gerar salt único
+
         String salt = dataEncryptionService.generateSalt();
         
-        // Criptografar senha com BCrypt (já inclui salt)
+
         String hashedPassword = passwordEncoder.encode(plainPassword + salt);
         
         log.debug("Senha criptografada com sucesso");
@@ -221,13 +221,13 @@ public class SecureAuthenticationService {
             throw new IllegalArgumentException("Senha é obrigatória");
         }
         
-        // Validar formato do identificador (email ou username)
+
         if (!EMAIL_PATTERN.matcher(identifier).matches() && 
             !USERNAME_PATTERN.matcher(identifier).matches()) {
             throw new IllegalArgumentException("Formato de identificador inválido");
         }
         
-        // Verificar comprimento da senha
+
         if (password.length() > 256) {
             throw new IllegalArgumentException("Senha muito longa");
         }
@@ -236,18 +236,18 @@ public class SecureAuthenticationService {
     private int calculatePasswordStrength(String password) {
         int strength = 0;
         
-        // Comprimento
+
         if (password.length() >= 8) strength += 20;
         if (password.length() >= 12) strength += 10;
         if (password.length() >= 16) strength += 10;
         
-        // Variedade de caracteres
+
         if (password.matches(".*[a-z].*")) strength += 10;
         if (password.matches(".*[A-Z].*")) strength += 10;
         if (password.matches(".*[0-9].*")) strength += 10;
         if (password.matches(".*[@#$%^&+=!?*()_\\-\\[\\]{}|;:,.<>].*")) strength += 15;
         
-        // Complexidade
+
         int uniqueChars = (int) password.chars().distinct().count();
         if (uniqueChars >= password.length() * 0.7) strength += 15;
         

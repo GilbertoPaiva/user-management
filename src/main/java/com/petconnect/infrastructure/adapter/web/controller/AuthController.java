@@ -69,7 +69,7 @@ public class AuthController {
 
         User user = authenticateUserService.createUser(command);
         
-        // Gerar tokens JWT
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String accessToken = jwtService.generateTokenWithUserInfo(
                 userDetails, 
@@ -91,13 +91,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request, 
                                                           HttpServletRequest httpRequest) {
-        // Obter IP do cliente via SecurityInterceptor
+
         String clientIp = SecurityInterceptor.getCurrentClientIp();
         if (clientIp == null) {
             clientIp = httpRequest.getRemoteAddr();
         }
         
-        // Usar o serviço de autenticação segura
+
         SecureAuthenticationService.AuthenticationResult result = 
             secureAuthenticationService.authenticateUser(request.getEmail(), request.getPassword(), clientIp);
         
@@ -106,7 +106,7 @@ public class AuthController {
                     .body(ApiResponse.error(result.getErrorMessage()));
         }
         
-        // Buscar dados completos do usuário para resposta
+
         User user = authenticateUserService.execute(request.getEmail(), request.getPassword());
         
         AuthResponse response = AuthResponse.builder()
@@ -136,7 +136,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        // Usar o serviço de autenticação segura para refresh token
+
         SecureAuthenticationService.AuthenticationResult result = 
             secureAuthenticationService.refreshToken(request.getRefreshToken());
         
@@ -145,9 +145,9 @@ public class AuthController {
                     .body(ApiResponse.error(result.getErrorMessage()));
         }
         
-        // Buscar dados completos do usuário para resposta
+
         String userEmail = jwtService.extractUsername(request.getRefreshToken());
-        User user = authenticateUserService.execute(userEmail, ""); // Password não necessária para refresh
+        User user = authenticateUserService.execute(userEmail, "");
         
         AuthResponse response = AuthResponse.builder()
                 .accessToken(result.getAccessToken())

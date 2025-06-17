@@ -24,12 +24,12 @@ public class SensitiveDataDecryptionService {
         }
         
         try {
-            // Criar cópia do usuário para não modificar o original
+
             User decryptedUser = User.builder()
                     .id(user.getId())
                     .username(user.getUsername())
                     .email(decryptIfEncrypted(user.getEmail()))
-                    .password(user.getPassword()) // Senha nunca é descriptografada
+                    .password(user.getPassword())
                     .fullName(user.getFullName())
                     .userType(user.getUserType())
                     .active(user.isActive())
@@ -38,7 +38,7 @@ public class SensitiveDataDecryptionService {
                     .updatedAt(user.getUpdatedAt())
                     .build();
             
-            // Descriptografar dados do perfil se existir
+
             if (user.getUserProfile() != null) {
                 var profile = user.getUserProfile();
                 var decryptedProfile = com.petconnect.domain.user.entity.UserProfile.builder()
@@ -55,7 +55,7 @@ public class SensitiveDataDecryptionService {
                 decryptedUser.setUserProfile(decryptedProfile);
             }
             
-            // Descriptografar respostas das perguntas de segurança se existir
+
             if (user.getSecurityQuestions() != null) {
                 var secQuestions = user.getSecurityQuestions();
                 var decryptedSecQuestions = com.petconnect.domain.user.entity.SecurityQuestions.builder()
@@ -75,7 +75,7 @@ public class SensitiveDataDecryptionService {
         } catch (Exception e) {
             log.error("Erro ao descriptografar dados sensíveis do usuário: {}", 
                      encryptionService.maskSensitiveData(user.getUsername(), 3), e);
-            return user; // Retornar original em caso de erro
+            return user;
         }
     }
     
@@ -95,7 +95,7 @@ public class SensitiveDataDecryptionService {
                 return false;
             }
             
-            // Se não está criptografado, comparar diretamente
+
             if (!isEncrypted(encryptedData)) {
                 return plainText.equals(encryptedData);
             }
@@ -149,7 +149,7 @@ public class SensitiveDataDecryptionService {
             return false;
         }
         
-        // Verificar se contém caracteres que indicam criptografia Base64
+
         return data.matches("^[A-Za-z0-9+/]*={0,2}$") && data.length() > 50;
     }
     

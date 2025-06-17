@@ -41,7 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toSet());
             
-            // Adiciona role baseada no tipo de usuário
+
             authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getUserType().name()));
             
             return authorities;
@@ -77,7 +77,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             return user.isActive();
         }
 
-        // Métodos para acessar o usuário
+
         public User getUser() {
             return user;
         }

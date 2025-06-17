@@ -17,7 +17,7 @@ public interface ServicoRepositoryPort {
     void deleteById(UUID id);
     Page<Servico> findAll(Pageable pageable);
     
-    // Métodos de busca avançada
+
     Page<Servico> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
     Page<Servico> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
     Page<Servico> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(

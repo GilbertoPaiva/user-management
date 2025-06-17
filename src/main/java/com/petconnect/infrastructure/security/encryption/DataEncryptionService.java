@@ -25,7 +25,7 @@ public class DataEncryptionService {
     
     private SecretKey getSecretKey() {
         byte[] key = encryptionKey.getBytes(StandardCharsets.UTF_8);
-        // Garantir que a chave tenha 16 bytes (128 bits)
+
         byte[] keyBytes = new byte[16];
         System.arraycopy(key, 0, keyBytes, 0, Math.min(key.length, keyBytes.length));
         return new SecretKeySpec(keyBytes, ALGORITHM);

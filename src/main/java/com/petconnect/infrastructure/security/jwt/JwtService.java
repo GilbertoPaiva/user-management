@@ -21,10 +21,10 @@ public class JwtService {
     @Value("${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
     private String secretKey;
 
-    @Value("${jwt.expiration:86400000}") // 24 horas em milliseconds
+    @Value("${jwt.expiration:86400000}")
     private long jwtExpiration;
 
-    @Value("${jwt.refresh-token.expiration:604800000}") // 7 dias em milliseconds
+    @Value("${jwt.refresh-token.expiration:604800000}")
     private long refreshExpiration;
 
     /**

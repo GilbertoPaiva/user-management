@@ -15,15 +15,15 @@ public class SecurityInterceptor implements HandlerInterceptor {
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // Capturar IP do cliente
+
         String clientIp = getClientIpAddress(request);
         clientIpHolder.set(clientIp);
         
-        // Capturar User-Agent
+
         String userAgent = request.getHeader("User-Agent");
         userAgentHolder.set(userAgent);
         
-        // Log de acesso
+
         log.debug("Request from IP: {} | User-Agent: {} | URL: {} {}", 
             clientIp, userAgent, request.getMethod(), request.getRequestURI());
         
@@ -33,7 +33,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, 
                                Object handler, Exception ex) {
-        // Limpar ThreadLocal para evitar memory leaks
+
         clientIpHolder.remove();
         userAgentHolder.remove();
     }
@@ -65,7 +65,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
         for (String header : headers) {
             String ip = request.getHeader(header);
             if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
-                // Se houver múltiplos IPs, pegar o primeiro
+
                 if (ip.contains(",")) {
                     ip = ip.split(",")[0].trim();
                 }

@@ -37,7 +37,7 @@ public class SensitiveDataEncryptionListener {
         if (entity instanceof UserJpaEntity) {
             encryptUserData((UserJpaEntity) entity);
         }
-        // Adicionar outros tipos de entidades conforme necessário
+
     }
     
     /**
@@ -45,7 +45,7 @@ public class SensitiveDataEncryptionListener {
      */
     private void encryptUserData(UserJpaEntity user) {
         try {
-            // Criptografar email se não estiver já criptografado
+
             if (user.getEmail() != null && !isEncrypted(user.getEmail())) {
                 String encryptedEmail = encryptionService.encryptSensitiveData(user.getEmail());
                 user.setEmail(encryptedEmail);
@@ -53,22 +53,22 @@ public class SensitiveDataEncryptionListener {
                          encryptionService.maskSensitiveData(user.getUsername(), 3));
             }
             
-            // Criptografar campos sensíveis do usuário
+
             if (user.getContactNumber() != null && !isEncrypted(user.getContactNumber())) {
                 user.setContactNumber(encryptionService.encryptSensitiveData(user.getContactNumber()));
             }
             
-            // Criptografar CNPJ
+
             if (user.getCnpj() != null && !isEncrypted(user.getCnpj())) {
                 user.setCnpj(encryptionService.encryptSensitiveData(user.getCnpj()));
             }
             
-            // Criptografar CRMV
+
             if (user.getCrmv() != null && !isEncrypted(user.getCrmv())) {
                 user.setCrmv(encryptionService.encryptSensitiveData(user.getCrmv()));
             }
             
-            // Criptografar respostas das perguntas de segurança
+
             if (user.getSecurityAnswer1() != null && !isEncrypted(user.getSecurityAnswer1())) {
                 user.setSecurityAnswer1(encryptionService.encryptSensitiveData(user.getSecurityAnswer1()));
             }
@@ -84,7 +84,7 @@ public class SensitiveDataEncryptionListener {
         } catch (Exception e) {
             log.error("Erro ao criptografar dados sensíveis do usuário: {}", 
                      user.getUsername(), e);
-            // Não propagar a exceção para não quebrar o fluxo de persistência
+
         }
     }
     
@@ -97,7 +97,7 @@ public class SensitiveDataEncryptionListener {
             return false;
         }
         
-        // Verificar se contém caracteres que indicam criptografia Base64
+
         return data.matches("^[A-Za-z0-9+/]*={0,2}$") && data.length() > 50;
     }
 }

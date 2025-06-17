@@ -52,12 +52,12 @@ public class SecurityAuditController {
             logs = securityAuditLogRepository.findAll();
         }
         
-        // Converter para response DTOs
+
         List<SecurityAuditLogResponse> responses = logs.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
         
-        // Aplicar paginação manual
+
         Pageable pageable = PageRequest.of(page, size);
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), responses.size());
@@ -82,23 +82,23 @@ public class SecurityAuditController {
         List<SecurityAuditLog> weeklyLogs = securityAuditLogRepository.findByEventTimestampBetween(
                 lastWeek, LocalDateTime.now());
         
-        // Contar eventos por tipo
+
         Map<String, Long> eventTypeCount = recentLogs.stream()
                 .collect(Collectors.groupingBy(
                         SecurityAuditLog::getEventType, Collectors.counting()));
         
-        // Contar tentativas de login falhas
+
         long failedLogins24h = recentLogs.stream()
                 .filter(log -> "LOGIN_FAILURE".equals(log.getEventType()))
                 .count();
         
-        // Contar violações de segurança
+
         long securityViolations24h = recentLogs.stream()
                 .filter(log -> "SECURITY_VIOLATION".equals(log.getEventType()) || 
                               "UNAUTHORIZED_ACCESS".equals(log.getEventType()))
                 .count();
         
-        // IPs mais ativos
+
         Map<String, Long> topIps = recentLogs.stream()
                 .filter(log -> log.getIpAddress() != null)
                 .collect(Collectors.groupingBy(

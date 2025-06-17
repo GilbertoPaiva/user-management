@@ -40,7 +40,7 @@ public class CreateUserRequest {
     private String securityQuestion3;
     private String securityAnswer3;
     
-    // UserProfile fields
+
     private String nome;
     private String location;
     private String contactNumber;

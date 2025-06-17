@@ -11,13 +11,13 @@ class ProdutoTest {
 
     @Test
     void shouldCreateProdutoWithRequiredFields() {
-        // Given
+
         UUID id = UUID.randomUUID();
         UUID lojistaId = UUID.randomUUID();
         String nome = "Ração Premium";
         BigDecimal price = new BigDecimal("29.99");
         
-        // When
+
         Produto produto = Produto.builder()
                 .id(id)
                 .lojistaId(lojistaId)
@@ -29,7 +29,7 @@ class ProdutoTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         
-        // Then
+
         assertNotNull(produto);
         assertEquals(id, produto.getId());
         assertEquals(lojistaId, produto.getLojistaId());
@@ -40,7 +40,7 @@ class ProdutoTest {
 
     @Test
     void shouldUpdateProdutoInfo() {
-        // Given
+
         Produto produto = Produto.builder()
                 .nome("Nome Antigo")
                 .description("Descrição Antiga")
@@ -55,10 +55,10 @@ class ProdutoTest {
         String novaUnidade = "kg";
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When
+
         produto.updateInfo(novoNome, novaDescricao, novoPreco, novaUnidade);
         
-        // Then
+
         assertEquals(novoNome, produto.getNome());
         assertEquals(novaDescricao, produto.getDescription());
         assertEquals(novoPreco, produto.getPrice());
@@ -68,7 +68,7 @@ class ProdutoTest {
 
     @Test
     void shouldValidatePrice() {
-        // Given
+
         Produto produtoValidPrice = Produto.builder()
                 .price(new BigDecimal("10.50"))
                 .build();
@@ -81,7 +81,7 @@ class ProdutoTest {
                 .price(null)
                 .build();
         
-        // When & Then
+
         assertTrue(produtoValidPrice.isValidPrice());
         assertFalse(produtoInvalidPrice.isValidPrice());
         assertFalse(produtoNullPrice.isValidPrice());

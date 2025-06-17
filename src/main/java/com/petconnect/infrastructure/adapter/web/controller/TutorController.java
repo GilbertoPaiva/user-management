@@ -33,11 +33,11 @@ public class TutorController {
         
         Pageable pageable = PageRequest.of(page, size);
         
-        // Buscar produtos disponíveis
+
         Page<Produto> produtosPage = produtoRepository.findAll(pageable);
         Page<ProdutoResponse> produtoResponses = produtosPage.map(this::mapToProdutoResponse);
         
-        // Buscar serviços disponíveis
+
         Page<Servico> servicosPage = servicoRepository.findAll(pageable);
         Page<ServicoResponse> servicoResponses = servicosPage.map(this::mapToServicoResponse);
         
