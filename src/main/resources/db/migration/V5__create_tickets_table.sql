@@ -8,7 +8,7 @@ VALUES (
     true,
     NOW(),
     NOW(),
-    'comum',
+    'TUTOR',
     'system'
 );
 

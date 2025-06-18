@@ -3,12 +3,12 @@ VALUES (
     gen_random_uuid(),
     'adminuser',
     'admin@exemplo.com',
-    '$2y$10$xpSs2TMNknkcw5gpcPg7beba/io/LRd1yOuyyj.oe70hdIpfDjn7i',
+    'senha123',
     'Administrador',
     true,
     NOW(),
     NOW(),
-    'colaborador',
+    'ADMIN',
     'admin'
 );
 
