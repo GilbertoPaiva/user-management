@@ -10,13 +10,13 @@ class TutorTest {
 
     @Test
     void shouldCreateTutorWithRequiredFields() {
-        // Given
+
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         String nome = "João Silva";
         String location = "São Paulo, SP";
         
-        // When
+
         Tutor tutor = Tutor.builder()
                 .id(id)
                 .userId(userId)
@@ -28,7 +28,7 @@ class TutorTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         
-        // Then
+
         assertNotNull(tutor);
         assertEquals(id, tutor.getId());
         assertEquals(userId, tutor.getUserId());
@@ -40,7 +40,7 @@ class TutorTest {
 
     @Test
     void shouldUpdateTutorInfo() {
-        // Given
+
         Tutor tutor = Tutor.builder()
                 .nome("Nome Antigo")
                 .location("Localização Antiga")
@@ -55,10 +55,10 @@ class TutorTest {
         String novoGuardian = "Novo Guardian";
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When
+
         tutor.updateInfo(novoNome, novaLocation, novoContactNumber, novoGuardian);
         
-        // Then
+
         assertEquals(novoNome, tutor.getNome());
         assertEquals(novaLocation, tutor.getLocation());
         assertEquals(novoContactNumber, tutor.getContactNumber());
@@ -68,7 +68,7 @@ class TutorTest {
 
     @Test
     void shouldCheckIfTutorHasCnpj() {
-        // Given
+
         Tutor tutorWithCnpj = Tutor.builder()
                 .cnpj("12.345.678/0001-90")
                 .build();
@@ -81,7 +81,7 @@ class TutorTest {
                 .cnpj("   ")
                 .build();
         
-        // When & Then
+
         assertTrue(tutorWithCnpj.hasCnpj());
         assertFalse(tutorWithoutCnpj.hasCnpj());
         assertFalse(tutorWithEmptyCnpj.hasCnpj());
@@ -89,13 +89,12 @@ class TutorTest {
 
     @Test
     void shouldCreateTutorWithMinimalData() {
-        // Given & When
         Tutor tutor = Tutor.builder()
                 .userId(UUID.randomUUID())
                 .nome("João")
                 .build();
         
-        // Then
+
         assertNotNull(tutor);
         assertNotNull(tutor.getUserId());
         assertEquals("João", tutor.getNome());
@@ -107,7 +106,7 @@ class TutorTest {
 
     @Test
     void shouldHandleOptionalCnpj() {
-        // Given
+
         Tutor tutorPessoaFisica = Tutor.builder()
                 .nome("João Silva")
                 .cnpj(null)
@@ -118,14 +117,14 @@ class TutorTest {
                 .cnpj("12.345.678/0001-90")
                 .build();
         
-        // When & Then
+
         assertFalse(tutorPessoaFisica.hasCnpj());
         assertTrue(tutorPessoaJuridica.hasCnpj());
     }
 
     @Test
     void shouldUpdateTimestampOnUpdate() {
-        // Given
+
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Tutor tutor = Tutor.builder()
                 .nome("Nome Original")
@@ -135,17 +134,17 @@ class TutorTest {
                 .updatedAt(originalTime)
                 .build();
         
-        // When
+
         tutor.updateInfo("Nome Atualizado", "Location Atualizada", "22222222222", "Guardian Atualizado");
         
-        // Then
+
         assertTrue(tutor.getUpdatedAt().isAfter(originalTime));
         assertTrue(tutor.getUpdatedAt().isAfter(LocalDateTime.now().minusMinutes(1)));
     }
 
     @Test
     void shouldMaintainImmutableFieldsOnUpdate() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalUserId = UUID.randomUUID();
         String originalCnpj = "12.345.678/0001-90";
@@ -163,10 +162,10 @@ class TutorTest {
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
         
-        // When
+
         tutor.updateInfo("Novo Nome", "Nova Location", "22222222222", "Novo Guardian");
         
-        // Then
+
         assertEquals(originalId, tutor.getId());
         assertEquals(originalUserId, tutor.getUserId());
         assertEquals(originalCnpj, tutor.getCnpj());
@@ -179,7 +178,7 @@ class TutorTest {
 
     @Test
     void shouldAcceptNullValuesOnUpdate() {
-        // Given
+
         Tutor tutor = Tutor.builder()
                 .nome("Nome Original")
                 .location("Location Original")
@@ -187,10 +186,10 @@ class TutorTest {
                 .guardian("Guardian Original")
                 .build();
         
-        // When
+
         tutor.updateInfo("Novo Nome", null, null, null);
         
-        // Then
+
         assertEquals("Novo Nome", tutor.getNome());
         assertNull(tutor.getLocation());
         assertNull(tutor.getContactNumber());
@@ -199,7 +198,7 @@ class TutorTest {
 
     @Test
     void shouldHandleEmptyStringCnpj() {
-        // Given
+
         Tutor tutorEmptyString = Tutor.builder()
                 .cnpj("")
                 .build();
@@ -208,14 +207,14 @@ class TutorTest {
                 .cnpj("   ")
                 .build();
         
-        // When & Then
+
         assertFalse(tutorEmptyString.hasCnpj());
         assertFalse(tutorWhitespace.hasCnpj());
     }
 
     @Test
     void shouldValidateCnpjWithDifferentFormats() {
-        // Given
+
         String[] validCnpjFormats = {
             "12.345.678/0001-90",
             "12345678000190",
@@ -224,31 +223,31 @@ class TutorTest {
         };
         
         for (String cnpj : validCnpjFormats) {
-            // When
+    
             Tutor tutor = Tutor.builder()
                     .cnpj(cnpj)
                     .build();
             
-            // Then
+    
             assertTrue(tutor.hasCnpj(), "CNPJ format '" + cnpj + "' should be valid");
         }
     }
 
     @Test
     void shouldHandleSpecialCharactersInFields() {
-        // Given
+
         String nomeComAcentos = "José María González";
         String locationComAcentos = "São Paulo - Área Central";
         String guardianComAcentos = "María José González";
         
-        // When
+
         Tutor tutor = Tutor.builder()
                 .nome(nomeComAcentos)
                 .location(locationComAcentos)
                 .guardian(guardianComAcentos)
                 .build();
         
-        // Then
+
         assertEquals(nomeComAcentos, tutor.getNome());
         assertEquals(locationComAcentos, tutor.getLocation());
         assertEquals(guardianComAcentos, tutor.getGuardian());
@@ -256,17 +255,17 @@ class TutorTest {
 
     @Test
     void shouldHandleLongContactNumbers() {
-        // Given
+
         String longContactNumber = "+55 (11) 98765-4321";
         
-        // When
+
         Tutor tutor = Tutor.builder()
                 .contactNumber(longContactNumber)
                 .build();
         
         tutor.updateInfo("Nome", "Location", "+55 (11) 12345-6789", "Guardian");
         
-        // Then
+
         assertEquals("+55 (11) 12345-6789", tutor.getContactNumber());
     }
 }

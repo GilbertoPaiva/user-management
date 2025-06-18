@@ -10,7 +10,7 @@ class LojistaTest {
 
     @Test
     void shouldCreateLojistaWithRequiredFields() {
-        // Given
+
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         String nome = "Pet Shop Silva";
@@ -18,7 +18,7 @@ class LojistaTest {
         String location = "São Paulo, SP";
         StoreType storeType = StoreType.LOCAL;
         
-        // When
+
         Lojista lojista = Lojista.builder()
                 .id(id)
                 .userId(userId)
@@ -31,7 +31,7 @@ class LojistaTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         
-        // Then
+
         assertNotNull(lojista);
         assertEquals(id, lojista.getId());
         assertEquals(userId, lojista.getUserId());
@@ -44,7 +44,7 @@ class LojistaTest {
 
     @Test
     void shouldUpdateLojistaInfo() {
-        // Given
+
         Lojista lojista = Lojista.builder()
                 .nome("Nome Antigo")
                 .location("Localização Antiga")
@@ -57,10 +57,10 @@ class LojistaTest {
         String novoContactNumber = "22222222222";
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When
+
         lojista.updateInfo(novoNome, novaLocation, novoContactNumber);
         
-        // Then
+
         assertEquals(novoNome, lojista.getNome());
         assertEquals(novaLocation, lojista.getLocation());
         assertEquals(novoContactNumber, lojista.getContactNumber());
@@ -69,40 +69,37 @@ class LojistaTest {
 
     @Test
     void shouldCreateLojistaWithVirtualStoreType() {
-        // Given & When
         Lojista lojistaVirtual = Lojista.builder()
                 .nome("E-commerce Pet")
                 .storeType(StoreType.VIRTUAL)
                 .build();
         
-        // Then
+
         assertNotNull(lojistaVirtual);
         assertEquals(StoreType.VIRTUAL, lojistaVirtual.getStoreType());
     }
 
     @Test
     void shouldCreateLojistaWithLocalStoreType() {
-        // Given & When
         Lojista lojistaLocal = Lojista.builder()
                 .nome("Pet Shop Local")
                 .storeType(StoreType.LOCAL)
                 .build();
         
-        // Then
+
         assertNotNull(lojistaLocal);
         assertEquals(StoreType.LOCAL, lojistaLocal.getStoreType());
     }
 
     @Test
     void shouldCreateLojistaWithMinimalData() {
-        // Given & When
         Lojista lojista = Lojista.builder()
                 .userId(UUID.randomUUID())
                 .nome("Pet Shop Básico")
                 .storeType(StoreType.LOCAL)
                 .build();
         
-        // Then
+
         assertNotNull(lojista);
         assertNotNull(lojista.getUserId());
         assertEquals("Pet Shop Básico", lojista.getNome());
@@ -114,7 +111,7 @@ class LojistaTest {
 
     @Test
     void shouldUpdateTimestampOnUpdate() {
-        // Given
+
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Lojista lojista = Lojista.builder()
                 .nome("Nome Original")
@@ -123,17 +120,17 @@ class LojistaTest {
                 .updatedAt(originalTime)
                 .build();
         
-        // When
+
         lojista.updateInfo("Nome Atualizado", "Location Atualizada", "22222222222");
         
-        // Then
+
         assertTrue(lojista.getUpdatedAt().isAfter(originalTime));
         assertTrue(lojista.getUpdatedAt().isAfter(LocalDateTime.now().minusMinutes(1)));
     }
 
     @Test
     void shouldMaintainImmutableFieldsOnUpdate() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalUserId = UUID.randomUUID();
         String originalCnpj = "12.345.678/0001-90";
@@ -152,10 +149,10 @@ class LojistaTest {
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
         
-        // When
+
         lojista.updateInfo("Novo Nome", "Nova Location", "22222222222");
         
-        // Then
+
         assertEquals(originalId, lojista.getId());
         assertEquals(originalUserId, lojista.getUserId());
         assertEquals(originalCnpj, lojista.getCnpj());
@@ -168,17 +165,17 @@ class LojistaTest {
 
     @Test
     void shouldAcceptNullValuesOnUpdate() {
-        // Given
+
         Lojista lojista = Lojista.builder()
                 .nome("Nome Original")
                 .location("Location Original")
                 .contactNumber("11111111111")
                 .build();
         
-        // When
+
         lojista.updateInfo("Novo Nome", null, null);
         
-        // Then
+
         assertEquals("Novo Nome", lojista.getNome());
         assertNull(lojista.getLocation());
         assertNull(lojista.getContactNumber());
@@ -186,7 +183,7 @@ class LojistaTest {
 
     @Test
     void shouldHandleDifferentCnpjFormats() {
-        // Given
+
         String[] validCnpjFormats = {
             "12.345.678/0001-90",
             "12345678000190",
@@ -195,52 +192,52 @@ class LojistaTest {
         };
         
         for (String cnpj : validCnpjFormats) {
-            // When
+    
             Lojista lojista = Lojista.builder()
                     .cnpj(cnpj)
                     .build();
             
-            // Then
+    
             assertEquals(cnpj, lojista.getCnpj());
         }
     }
 
     @Test
     void shouldHandleSpecialCharactersInFields() {
-        // Given
+
         String nomeComCaracteresEspeciais = "Pet Shop & Cia Ltda.";
         String locationComAcentos = "São Paulo - Área Central";
         
-        // When
+
         Lojista lojista = Lojista.builder()
                 .nome(nomeComCaracteresEspeciais)
                 .location(locationComAcentos)
                 .build();
         
-        // Then
+
         assertEquals(nomeComCaracteresEspeciais, lojista.getNome());
         assertEquals(locationComAcentos, lojista.getLocation());
     }
 
     @Test
     void shouldHandleLongContactNumbers() {
-        // Given
+
         String longContactNumber = "+55 (11) 98765-4321";
         
-        // When
+
         Lojista lojista = Lojista.builder()
                 .contactNumber(longContactNumber)
                 .build();
         
         lojista.updateInfo("Nome", "Location", "+55 (11) 12345-6789");
         
-        // Then
+
         assertEquals("+55 (11) 12345-6789", lojista.getContactNumber());
     }
 
     @Test
     void shouldDistinguishBetweenStoreTypes() {
-        // Given
+
         Lojista lojistaVirtual = Lojista.builder()
                 .nome("E-commerce Pet")
                 .storeType(StoreType.VIRTUAL)
@@ -251,7 +248,7 @@ class LojistaTest {
                 .storeType(StoreType.LOCAL)
                 .build();
         
-        // When & Then
+
         assertNotEquals(lojistaVirtual.getStoreType(), lojistaLocal.getStoreType());
         assertEquals(StoreType.VIRTUAL, lojistaVirtual.getStoreType());
         assertEquals(StoreType.LOCAL, lojistaLocal.getStoreType());
@@ -259,7 +256,7 @@ class LojistaTest {
 
     @Test
     void shouldAllowUpdateWithSameValues() {
-        // Given
+
         Lojista lojista = Lojista.builder()
                 .nome("Pet Shop Silva")
                 .location("São Paulo")
@@ -269,10 +266,10 @@ class LojistaTest {
         
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When - Update with same values
+        // Update with same values
         lojista.updateInfo("Pet Shop Silva", "São Paulo", "11999999999");
         
-        // Then - Should still update the timestamp
+        // Should still update the timestamp
         assertTrue(lojista.getUpdatedAt().isAfter(timeBeforeUpdate));
         assertEquals("Pet Shop Silva", lojista.getNome());
         assertEquals("São Paulo", lojista.getLocation());
@@ -280,7 +277,7 @@ class LojistaTest {
 
     @Test
     void shouldMaintainDataIntegrityAfterMultipleUpdates() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalUserId = UUID.randomUUID();
         String originalCnpj = "12.345.678/0001-90";
@@ -296,12 +293,12 @@ class LojistaTest {
                 .contactNumber("11111111111")
                 .build();
         
-        // When - Multiple updates
+        // Multiple updates
         lojista.updateInfo("Pet Shop Primeira Mudança", "Local 1", "22222222222");
         lojista.updateInfo("Pet Shop Segunda Mudança", "Local 2", "33333333333");
         lojista.updateInfo("Pet Shop Terceira Mudança", "Local 3", "44444444444");
         
-        // Then - Immutable fields should remain unchanged
+        // Immutable fields should remain unchanged
         assertEquals(originalId, lojista.getId());
         assertEquals(originalUserId, lojista.getUserId());
         assertEquals(originalCnpj, lojista.getCnpj());
@@ -315,14 +312,13 @@ class LojistaTest {
 
     @Test
     void shouldHandleNullCnpj() {
-        // Given & When
         Lojista lojista = Lojista.builder()
                 .nome("Pet Shop Sem CNPJ")
                 .cnpj(null)
                 .storeType(StoreType.LOCAL)
                 .build();
         
-        // Then
+
         assertNotNull(lojista);
         assertNull(lojista.getCnpj());
         assertEquals("Pet Shop Sem CNPJ", lojista.getNome());
@@ -330,10 +326,10 @@ class LojistaTest {
 
     @Test
     void shouldValidateStoreTypeEnumValues() {
-        // Given
+
         StoreType[] allStoreTypes = StoreType.values();
         
-        // When & Then
+
         assertEquals(2, allStoreTypes.length);
         assertTrue(java.util.Arrays.asList(allStoreTypes).contains(StoreType.VIRTUAL));
         assertTrue(java.util.Arrays.asList(allStoreTypes).contains(StoreType.LOCAL));
@@ -341,14 +337,13 @@ class LojistaTest {
 
     @Test
     void shouldCreateLojistaWithAllStoreTypes() {
-        // Given & When
         for (StoreType storeType : StoreType.values()) {
             Lojista lojista = Lojista.builder()
                     .nome("Pet Shop " + storeType.name())
                     .storeType(storeType)
                     .build();
             
-            // Then
+    
             assertNotNull(lojista);
             assertEquals(storeType, lojista.getStoreType());
         }

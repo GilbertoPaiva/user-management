@@ -34,6 +34,14 @@ public interface ServicoJpaRepository extends JpaRepository<ServicoJpaEntity, UU
            "LOWER(s.description) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<ServicoJpaEntity> findByNomeOrDescriptionContaining(@Param("search") String search, Pageable pageable);
     
+    @Query("SELECT s FROM ServicoJpaEntity s WHERE " +
+           "LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR " +
+           "LOWER(s.description) LIKE LOWER(CONCAT('%', :description, '%'))")
+    Page<ServicoJpaEntity> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            @Param("nome") String nome, 
+            @Param("description") String description, 
+            Pageable pageable);
+    
     @Query("SELECT COUNT(s.id) FROM ServicoJpaEntity s WHERE s.veterinarioId = :veterinarioId")
     long countByVeterinarioId(@Param("veterinarioId") UUID veterinarioId);
 }

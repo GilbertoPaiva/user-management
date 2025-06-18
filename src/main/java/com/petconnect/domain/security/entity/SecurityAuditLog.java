@@ -10,9 +10,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Entidade para logs de auditoria de segurança
- */
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -29,9 +26,6 @@ public class SecurityAuditLog extends AuditableEntity {
     private LocalDateTime eventTimestamp;
     private String additionalData;
     
-    /**
-     * Tipos de eventos de auditoria
-     */
     public enum EventType {
         LOGIN_ATTEMPT("LOGIN_ATTEMPT"),
         LOGIN_SUCCESS("LOGIN_SUCCESS"),

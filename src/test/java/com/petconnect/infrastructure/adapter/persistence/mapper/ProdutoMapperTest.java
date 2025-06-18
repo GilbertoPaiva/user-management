@@ -26,7 +26,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldMapProdutoToJpaEntitySuccessfully() {
-        // Given
+
         LocalDateTime now = LocalDateTime.now();
         Produto produto = Produto.builder()
                 .id(produtoId)
@@ -40,10 +40,10 @@ class ProdutoMapperTest {
                 .updatedAt(now)
                 .build();
 
-        // When
+
         ProdutoJpaEntity result = produtoMapper.toJpaEntity(produto);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(produtoId, result.getId());
         assertEquals(lojistaId, result.getLojistaId());
@@ -56,7 +56,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldMapProdutoToJpaEntityWithoutId() {
-        // Given
+
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
                 .nome("Produto Novo")
@@ -64,10 +64,10 @@ class ProdutoMapperTest {
                 .unitOfMeasure("un")
                 .build();
 
-        // When
+
         ProdutoJpaEntity result = produtoMapper.toJpaEntity(produto);
 
-        // Then
+
         assertNotNull(result);
         assertNull(result.getId()); // ID should not be set
         assertEquals(lojistaId, result.getLojistaId());
@@ -78,7 +78,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldMapJpaEntityToProdutoSuccessfully() {
-        // Given
+
         LocalDateTime now = LocalDateTime.now();
         ProdutoJpaEntity jpaEntity = ProdutoJpaEntity.builder()
                 .lojistaId(lojistaId)
@@ -92,10 +92,10 @@ class ProdutoMapperTest {
         jpaEntity.setCreatedAt(now);
         jpaEntity.setUpdatedAt(now);
 
-        // When
+
         Produto result = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(produtoId, result.getId());
         assertEquals(lojistaId, result.getLojistaId());
@@ -110,25 +110,25 @@ class ProdutoMapperTest {
 
     @Test
     void shouldReturnNullWhenMappingNullProdutoToJpaEntity() {
-        // When
+
         ProdutoJpaEntity result = produtoMapper.toJpaEntity(null);
 
-        // Then
+
         assertNull(result);
     }
 
     @Test
     void shouldReturnNullWhenMappingNullJpaEntityToProduto() {
-        // When
+
         Produto result = produtoMapper.toDomainEntity(null);
 
-        // Then
+
         assertNull(result);
     }
 
     @Test
     void shouldMapProdutoWithNullOptionalFields() {
-        // Given
+
         Produto produto = Produto.builder()
                 .id(produtoId)
                 .lojistaId(lojistaId)
@@ -139,10 +139,10 @@ class ProdutoMapperTest {
                 .photoUrl(null)
                 .build();
 
-        // When
+
         ProdutoJpaEntity result = produtoMapper.toJpaEntity(produto);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(produtoId, result.getId());
         assertEquals("Produto Simples", result.getNome());
@@ -154,7 +154,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldMapJpaEntityWithNullOptionalFields() {
-        // Given
+
         ProdutoJpaEntity jpaEntity = ProdutoJpaEntity.builder()
                 .lojistaId(lojistaId)
                 .nome("Produto Simples")
@@ -165,10 +165,10 @@ class ProdutoMapperTest {
                 .build();
         jpaEntity.setId(produtoId);
 
-        // When
+
         Produto result = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(produtoId, result.getId());
         assertEquals("Produto Simples", result.getNome());
@@ -180,7 +180,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldPreservePrecisionInPriceMapping() {
-        // Given
+
         BigDecimal precisePrice = new BigDecimal("123.456789");
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
@@ -189,11 +189,11 @@ class ProdutoMapperTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals(precisePrice, jpaEntity.getPrice());
@@ -202,7 +202,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldHandleSpecialCharactersInFields() {
-        // Given
+
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
                 .nome("Produto Especial & Único ™")
@@ -212,11 +212,11 @@ class ProdutoMapperTest {
                 .photoUrl("https://example.com/foto_ração_cães.jpg")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals("Produto Especial & Único ™", jpaEntity.getNome());
@@ -229,7 +229,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldHandleEmptyStringFields() {
-        // Given
+
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
                 .nome("Produto com Campos Vazios")
@@ -239,11 +239,11 @@ class ProdutoMapperTest {
                 .unitOfMeasure("un")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals("", jpaEntity.getDescription());
@@ -254,7 +254,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldMaintainBidirectionalMappingConsistency() {
-        // Given
+
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();
         
@@ -270,13 +270,13 @@ class ProdutoMapperTest {
                 .updatedAt(updatedAt)
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(originalProduto);
         jpaEntity.setCreatedAt(createdAt);
         jpaEntity.setUpdatedAt(updatedAt);
         Produto mappedBackProduto = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBackProduto);
         
@@ -294,7 +294,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldHandleLargeDecimalValues() {
-        // Given
+
         BigDecimal largePrice = new BigDecimal("999999.99");
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
@@ -303,11 +303,11 @@ class ProdutoMapperTest {
                 .unitOfMeasure("un")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals(largePrice, jpaEntity.getPrice());
@@ -316,7 +316,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldHandleSmallDecimalValues() {
-        // Given
+
         BigDecimal smallPrice = new BigDecimal("0.01");
         Produto produto = Produto.builder()
                 .lojistaId(lojistaId)
@@ -325,11 +325,11 @@ class ProdutoMapperTest {
                 .unitOfMeasure("mg")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals(smallPrice, jpaEntity.getPrice());
@@ -338,7 +338,7 @@ class ProdutoMapperTest {
 
     @Test
     void shouldHandleVeryLongStrings() {
-        // Given
+
         String longName = "Produto com Nome Muito Longo ".repeat(10);
         String longDescription = "Esta é uma descrição muito longa para testar os limites do mapeamento. ".repeat(20);
         String longUrl = "https://example.com/" + "very-long-path/".repeat(50) + "image.jpg";
@@ -352,11 +352,11 @@ class ProdutoMapperTest {
                 .unitOfMeasure("un")
                 .build();
 
-        // When
+
         ProdutoJpaEntity jpaEntity = produtoMapper.toJpaEntity(produto);
         Produto mappedBack = produtoMapper.toDomainEntity(jpaEntity);
 
-        // Then
+
         assertNotNull(jpaEntity);
         assertNotNull(mappedBack);
         assertEquals(longName, jpaEntity.getNome());

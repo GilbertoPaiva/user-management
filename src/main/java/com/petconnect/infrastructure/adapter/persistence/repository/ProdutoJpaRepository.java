@@ -34,6 +34,14 @@ public interface ProdutoJpaRepository extends JpaRepository<ProdutoJpaEntity, UU
            "LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<ProdutoJpaEntity> findByNomeOrDescriptionContaining(@Param("search") String search, Pageable pageable);
     
+    @Query("SELECT p FROM ProdutoJpaEntity p WHERE " +
+           "LOWER(p.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR " +
+           "LOWER(p.description) LIKE LOWER(CONCAT('%', :description, '%'))")
+    Page<ProdutoJpaEntity> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            @Param("nome") String nome, 
+            @Param("description") String description, 
+            Pageable pageable);
+    
     @Query("SELECT COUNT(p.id) FROM ProdutoJpaEntity p WHERE p.lojistaId = :lojistaId")
     long countByLojistaId(@Param("lojistaId") UUID lojistaId);
 }

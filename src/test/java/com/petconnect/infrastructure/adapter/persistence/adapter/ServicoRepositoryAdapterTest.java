@@ -69,15 +69,15 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldSaveServicoSuccessfully() {
-        // Given
+
         when(servicoMapper.toJpaEntity(servico)).thenReturn(servicoJpaEntity);
         when(servicoJpaRepository.save(servicoJpaEntity)).thenReturn(servicoJpaEntity);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Servico result = servicoRepositoryAdapter.save(servico);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(servico.getId(), result.getId());
         assertEquals(servico.getNome(), result.getNome());
@@ -89,14 +89,14 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindServicoByIdSuccessfully() {
-        // Given
+
         when(servicoJpaRepository.findById(servicoId)).thenReturn(Optional.of(servicoJpaEntity));
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Optional<Servico> result = servicoRepositoryAdapter.findById(servicoId);
 
-        // Then
+
         assertTrue(result.isPresent());
         assertEquals(servico.getId(), result.get().getId());
         assertEquals(servico.getNome(), result.get().getNome());
@@ -107,13 +107,13 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldReturnEmptyWhenServicoNotFound() {
-        // Given
+
         when(servicoJpaRepository.findById(servicoId)).thenReturn(Optional.empty());
 
-        // When
+
         Optional<Servico> result = servicoRepositoryAdapter.findById(servicoId);
 
-        // Then
+
         assertFalse(result.isPresent());
         
         verify(servicoJpaRepository, times(1)).findById(servicoId);
@@ -122,20 +122,18 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindServicosByVeterinarioId() {
-        // Given
+
         List<UUID> servicoIds = Arrays.asList(servicoId, UUID.randomUUID());
-        List<ServicoJpaEntity> jpaEntities = Arrays.asList(servicoJpaEntity);
-        List<Servico> servicos = Arrays.asList(servico);
 
         when(servicoJpaRepository.findIdsByVeterinarioId(veterinarioId)).thenReturn(servicoIds);
         when(servicoJpaRepository.findById(servicoId)).thenReturn(Optional.of(servicoJpaEntity));
         when(servicoJpaRepository.findById(servicoIds.get(1))).thenReturn(Optional.empty());
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         List<Servico> result = servicoRepositoryAdapter.findByVeterinarioId(veterinarioId);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(servico.getId(), result.get(0).getId());
@@ -146,17 +144,17 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindAllServicosWithPagination() {
-        // Given
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity));
         
         when(servicoJpaRepository.findAll(pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Page<Servico> result = servicoRepositoryAdapter.findAll(pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(servico.getId(), result.getContent().get(0).getId());
@@ -167,17 +165,17 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindServicosByVeterinarioIdWithPagination() {
-        // Given
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity));
         
         when(servicoJpaRepository.findByVeterinarioId(veterinarioId, pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Page<Servico> result = servicoRepositoryAdapter.findByVeterinarioId(veterinarioId, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(servico.getId(), result.getContent().get(0).getId());
@@ -188,16 +186,16 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldDeleteServicoById() {
-        // When
+
         servicoRepositoryAdapter.deleteById(servicoId);
 
-        // Then
+
         verify(servicoJpaRepository, times(1)).deleteById(servicoId);
     }
 
     @Test
     void shouldFindServicosByNomeContaining() {
-        // Given
+
         String nome = "Consulta";
         Pageable pageable = PageRequest.of(0, 10);
         Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity));
@@ -205,10 +203,10 @@ class ServicoRepositoryAdapterTest {
         when(servicoJpaRepository.findByNomeContainingIgnoreCase(nome, pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Page<Servico> result = servicoRepositoryAdapter.findByNomeContainingIgnoreCase(nome, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(servico.getId(), result.getContent().get(0).getId());
@@ -219,7 +217,7 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindServicosByPriceBetween() {
-        // Given
+
         BigDecimal minPrice = new BigDecimal("50.00");
         BigDecimal maxPrice = new BigDecimal("100.00");
         Pageable pageable = PageRequest.of(0, 10);
@@ -228,10 +226,10 @@ class ServicoRepositoryAdapterTest {
         when(servicoJpaRepository.findByPriceBetween(minPrice, maxPrice, pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Page<Servico> result = servicoRepositoryAdapter.findByPriceBetween(minPrice, maxPrice, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(servico.getId(), result.getContent().get(0).getId());
@@ -242,7 +240,7 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldFindServicosByNomeOrDescriptionContaining() {
-        // Given
+
         String searchTerm = "veterinária";
         Pageable pageable = PageRequest.of(0, 10);
         Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity));
@@ -250,11 +248,11 @@ class ServicoRepositoryAdapterTest {
         when(servicoJpaRepository.findByNomeOrDescriptionContaining(searchTerm, pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
+
         Page<Servico> result = servicoRepositoryAdapter.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 searchTerm, searchTerm, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(servico.getId(), result.getContent().get(0).getId());
@@ -265,13 +263,11 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldHandleEmptyListFromFindByVeterinarioId() {
-        // Given
         when(servicoJpaRepository.findIdsByVeterinarioId(veterinarioId)).thenReturn(Arrays.asList());
 
-        // When
+
         List<Servico> result = servicoRepositoryAdapter.findByVeterinarioId(veterinarioId);
 
-        // Then
         assertNotNull(result);
         assertTrue(result.isEmpty());
         
@@ -281,16 +277,12 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldHandleNullReturnFromMapper() {
-        // Given
         when(servicoJpaRepository.findById(servicoId)).thenReturn(Optional.of(servicoJpaEntity));
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(null);
 
-        // When
         Optional<Servico> result = servicoRepositoryAdapter.findById(servicoId);
 
-        // Then
-        assertTrue(result.isPresent());
-        assertNull(result.get());
+        assertFalse(result.isPresent());
         
         verify(servicoJpaRepository, times(1)).findById(servicoId);
         verify(servicoMapper, times(1)).toDomainEntity(servicoJpaEntity);
@@ -298,11 +290,9 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldHandleExceptionDuringFindAll() {
-        // Given
         Pageable pageable = PageRequest.of(0, 10);
         when(servicoJpaRepository.findAll(pageable)).thenThrow(new RuntimeException("Database error"));
 
-        // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, 
                 () -> servicoRepositoryAdapter.findAll(pageable));
         
@@ -312,11 +302,9 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldHandleExceptionDuringSave() {
-        // Given
         when(servicoMapper.toJpaEntity(servico)).thenReturn(servicoJpaEntity);
         when(servicoJpaRepository.save(servicoJpaEntity)).thenThrow(new RuntimeException("Save failed"));
 
-        // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, 
                 () -> servicoRepositoryAdapter.save(servico));
         
@@ -327,19 +315,16 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldVerifyCorrectMethodCallsOnComplexSearch() {
-        // Given
         String searchTerm = "consulta";
         Pageable pageable = PageRequest.of(0, 5);
-        Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity));
+        Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity), pageable, 1);
         
         when(servicoJpaRepository.findByNomeOrDescriptionContaining(searchTerm, pageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
         Page<Servico> result = servicoRepositoryAdapter.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 searchTerm, searchTerm, pageable);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(5, result.getSize());
@@ -350,7 +335,7 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldHandleMultipleServicosForSameVeterinario() {
-        // Given
+
         Servico servico2 = Servico.builder()
                 .id(UUID.randomUUID())
                 .veterinarioId(veterinarioId)
@@ -373,10 +358,8 @@ class ServicoRepositoryAdapterTest {
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
         when(servicoMapper.toDomainEntity(servicoJpaEntity2)).thenReturn(servico2);
 
-        // When
         List<Servico> result = servicoRepositoryAdapter.findByVeterinarioId(veterinarioId);
 
-        // Then
         assertNotNull(result);
         assertEquals(2, result.size());
         assertTrue(result.contains(servico));
@@ -388,17 +371,15 @@ class ServicoRepositoryAdapterTest {
 
     @Test
     void shouldVerifyPaginationParameters() {
-        // Given
+
         Pageable customPageable = PageRequest.of(2, 5);
         Page<ServicoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(servicoJpaEntity), customPageable, 15);
         
         when(servicoJpaRepository.findAll(customPageable)).thenReturn(jpaPage);
         when(servicoMapper.toDomainEntity(servicoJpaEntity)).thenReturn(servico);
 
-        // When
         Page<Servico> result = servicoRepositoryAdapter.findAll(customPageable);
 
-        // Then
         assertNotNull(result);
         assertEquals(1, result.getNumberOfElements());
         assertEquals(2, result.getNumber());

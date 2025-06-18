@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -31,20 +30,47 @@ public class SecureAuthenticationService {
     private final JwtService jwtService;
     private final SecurityAuditService securityAuditService;
     private final DataEncryptionService dataEncryptionService;
-    
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
         "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9._-]{3,50}$");
     
-    /**
-     * Autenticação segura com múltiplas validações
-     */
     public AuthenticationResult authenticateUser(String identifier, String password, String clientIp) {
         try {
-
-            validateAuthenticationInput(identifier, password);
+            if (identifier == null || identifier.trim().isEmpty()) {
+                return AuthenticationResult.builder()
+                    .success(false)
+                    .errorMessage("Identificador é obrigatório")
+                    .build();
+            }
             
+            if (password == null || password.trim().isEmpty()) {
+                return AuthenticationResult.builder()
+                    .success(false)
+                    .errorMessage("Senha é obrigatória")
+                    .build();
+            }
+            
+            if (!isValidEmail(identifier) && !isValidUsername(identifier)) {
+                return AuthenticationResult.builder()
+                    .success(false)
+                    .errorMessage("Formato de identificador inválido")
+                    .build();
+            }
+            
+            if (password.length() > 256) {
+                return AuthenticationResult.builder()
+                    .success(false)
+                    .errorMessage("Senha muito longa")
+                    .build();
+            }
+            
+            if (password.length() < 8) {
+                return AuthenticationResult.builder()
+                    .success(false)
+                    .errorMessage("Senha muito curta")
+                    .build();
+            }
 
             if (securityAuditService.isUserBlocked(identifier)) {
                 long remainingMinutes = securityAuditService.getRemainingLockoutMinutes(identifier);
@@ -57,7 +83,6 @@ public class SecureAuthenticationService {
                                 remainingMinutes + " minuto(s)")
                     .build();
             }
-            
 
             if (!securityAuditService.canAttemptLogin(identifier)) {
                 return AuthenticationResult.builder()
@@ -65,19 +90,16 @@ public class SecureAuthenticationService {
                     .errorMessage("Muitas tentativas de login. Aguarde antes de tentar novamente")
                     .build();
             }
-            
 
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(identifier, password)
             );
             
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            
 
             String accessToken = jwtService.generateTokenWithUserInfo(
                 userDetails, userDetails.getUsername(), "USER");
             String refreshToken = jwtService.generateRefreshToken(userDetails);
-            
 
             securityAuditService.recordLoginAttempt(identifier, true);
             
@@ -103,6 +125,7 @@ public class SecureAuthenticationService {
                 .build();
                 
         } catch (DisabledException e) {
+            securityAuditService.recordLoginAttempt(identifier, false);
             securityAuditService.recordSecurityViolation("DISABLED_ACCOUNT_ACCESS", 
                 "Tentativa de acesso com conta desabilitada: " + identifier);
             
@@ -125,9 +148,6 @@ public class SecureAuthenticationService {
         }
     }
     
-    /**
-     * Validação de senha com critérios rigorosos
-     */
     public PasswordValidationResult validatePassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             return PasswordValidationResult.builder()
@@ -136,7 +156,6 @@ public class SecureAuthenticationService {
                 .strength(0)
                 .build();
         }
-        
 
         int strength = calculatePasswordStrength(password);
         
@@ -158,17 +177,12 @@ public class SecureAuthenticationService {
             .build();
     }
     
-    /**
-     * Criptografia segura de senha
-     */
     public String encryptPassword(String plainPassword) {
         if (plainPassword == null || plainPassword.trim().isEmpty()) {
             throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
         }
-        
 
         String salt = dataEncryptionService.generateSalt();
-        
 
         String hashedPassword = passwordEncoder.encode(plainPassword + salt);
         
@@ -176,9 +190,6 @@ public class SecureAuthenticationService {
         return hashedPassword;
     }
     
-    /**
-     * Refresh token seguro
-     */
     public AuthenticationResult refreshToken(String refreshToken) {
         try {
             if (!jwtService.isTokenValid(refreshToken, null)) {
@@ -212,46 +223,50 @@ public class SecureAuthenticationService {
         }
     }
     
-    private void validateAuthenticationInput(String identifier, String password) {
-        if (identifier == null || identifier.trim().isEmpty()) {
-            throw new IllegalArgumentException("Identificador é obrigatório");
+    public int calculatePasswordStrength(String password) {
+        if (password == null || password.isEmpty()) {
+            return 0;
         }
         
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Senha é obrigatória");
-        }
-        
-
-        if (!EMAIL_PATTERN.matcher(identifier).matches() && 
-            !USERNAME_PATTERN.matcher(identifier).matches()) {
-            throw new IllegalArgumentException("Formato de identificador inválido");
-        }
-        
-
-        if (password.length() > 256) {
-            throw new IllegalArgumentException("Senha muito longa");
-        }
-    }
-    
-    private int calculatePasswordStrength(String password) {
         int strength = 0;
         
-
         if (password.length() >= 8) strength += 20;
         if (password.length() >= 12) strength += 10;
         if (password.length() >= 16) strength += 10;
         
-
         if (password.matches(".*[a-z].*")) strength += 10;
         if (password.matches(".*[A-Z].*")) strength += 10;
         if (password.matches(".*[0-9].*")) strength += 10;
         if (password.matches(".*[@#$%^&+=!?*()_\\-\\[\\]{}|;:,.<>].*")) strength += 15;
         
-
         int uniqueChars = (int) password.chars().distinct().count();
         if (uniqueChars >= password.length() * 0.7) strength += 15;
         
         return Math.min(strength, 100);
+    }
+    
+    public boolean isValidEmail(String email) {
+        return email != null && EMAIL_PATTERN.matcher(email).matches();
+    }
+    
+    public boolean isValidUsername(String username) {
+        return username != null && USERNAME_PATTERN.matcher(username).matches();
+    }
+    
+    public PasswordEncryptionResult encryptPasswordWithDetails(String password) {
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
+        }
+        
+        String salt = dataEncryptionService.generateSalt();
+        String hashedPassword = passwordEncoder.encode(password + salt);
+        int strengthScore = calculatePasswordStrength(password);
+        
+        return PasswordEncryptionResult.builder()
+            .encryptedPassword(hashedPassword)
+            .salt(salt)
+            .strengthScore(strengthScore)
+            .build();
     }
     
     @lombok.Data
@@ -272,5 +287,13 @@ public class SecureAuthenticationService {
         private int strength;
         private Map<String, Boolean> criteria;
         private String message;
+    }
+    
+    @lombok.Data
+    @lombok.Builder
+    public static class PasswordEncryptionResult {
+        private String encryptedPassword;
+        private String salt;
+        private int strengthScore;
     }
 }

@@ -10,14 +10,14 @@ class VeterinarioTest {
 
     @Test
     void shouldCreateVeterinarioWithRequiredFields() {
-        // Given
+
         UUID id = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         String nome = "Dr. Carlos Silva";
         String crmv = "CRMV-SP 12345";
         String location = "São Paulo, SP";
         
-        // When
+
         Veterinario veterinario = Veterinario.builder()
                 .id(id)
                 .userId(userId)
@@ -30,7 +30,7 @@ class VeterinarioTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         
-        // Then
+
         assertNotNull(veterinario);
         assertEquals(id, veterinario.getId());
         assertEquals(userId, veterinario.getUserId());
@@ -43,7 +43,7 @@ class VeterinarioTest {
 
     @Test
     void shouldUpdateVeterinarioInfo() {
-        // Given
+
         Veterinario veterinario = Veterinario.builder()
                 .nome("Nome Antigo")
                 .location("Localização Antiga")
@@ -58,10 +58,10 @@ class VeterinarioTest {
         String novoBusinessHours = "Segunda a Domingo: 24h";
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When
+
         veterinario.updateInfo(novoNome, novaLocation, novoContactNumber, novoBusinessHours);
         
-        // Then
+
         assertEquals(novoNome, veterinario.getNome());
         assertEquals(novaLocation, veterinario.getLocation());
         assertEquals(novoContactNumber, veterinario.getContactNumber());
@@ -71,58 +71,57 @@ class VeterinarioTest {
 
     @Test
     void shouldValidateValidCrmv() {
-        // Given
+
         Veterinario veterinarioValidCrmv = Veterinario.builder()
                 .crmv("CRMV-SP 12345")
                 .build();
         
-        // When & Then
+
         assertTrue(veterinarioValidCrmv.isValidCrmv());
     }
 
     @Test
     void shouldInvalidateNullCrmv() {
-        // Given
+
         Veterinario veterinarioNullCrmv = Veterinario.builder()
                 .crmv(null)
                 .build();
         
-        // When & Then
+
         assertFalse(veterinarioNullCrmv.isValidCrmv());
     }
 
     @Test
     void shouldInvalidateEmptyCrmv() {
-        // Given
+
         Veterinario veterinarioEmptyCrmv = Veterinario.builder()
                 .crmv("")
                 .build();
         
-        // When & Then
+
         assertFalse(veterinarioEmptyCrmv.isValidCrmv());
     }
 
     @Test
     void shouldInvalidateWhitespaceCrmv() {
-        // Given
+
         Veterinario veterinarioWhitespaceCrmv = Veterinario.builder()
                 .crmv("   ")
                 .build();
         
-        // When & Then
+
         assertFalse(veterinarioWhitespaceCrmv.isValidCrmv());
     }
 
     @Test
     void shouldCreateVeterinarioWithMinimalData() {
-        // Given & When
         Veterinario veterinario = Veterinario.builder()
                 .userId(UUID.randomUUID())
                 .nome("Dr. João")
                 .crmv("CRMV-RJ 99999")
                 .build();
         
-        // Then
+
         assertNotNull(veterinario);
         assertNotNull(veterinario.getUserId());
         assertEquals("Dr. João", veterinario.getNome());
@@ -134,7 +133,7 @@ class VeterinarioTest {
 
     @Test
     void shouldUpdateTimestampOnUpdate() {
-        // Given
+
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Veterinario veterinario = Veterinario.builder()
                 .nome("Nome Original")
@@ -144,17 +143,17 @@ class VeterinarioTest {
                 .updatedAt(originalTime)
                 .build();
         
-        // When
+
         veterinario.updateInfo("Nome Atualizado", "Location Atualizada", "22222222222", "Horário Atualizado");
         
-        // Then
+
         assertTrue(veterinario.getUpdatedAt().isAfter(originalTime));
         assertTrue(veterinario.getUpdatedAt().isAfter(LocalDateTime.now().minusMinutes(1)));
     }
 
     @Test
     void shouldMaintainImmutableFieldsOnUpdate() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalUserId = UUID.randomUUID();
         String originalCrmv = "CRMV-SP 12345";
@@ -172,10 +171,10 @@ class VeterinarioTest {
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
         
-        // When
+
         veterinario.updateInfo("Novo Nome", "Nova Location", "22222222222", "Novo Horário");
         
-        // Then
+
         assertEquals(originalId, veterinario.getId());
         assertEquals(originalUserId, veterinario.getUserId());
         assertEquals(originalCrmv, veterinario.getCrmv());
@@ -188,7 +187,7 @@ class VeterinarioTest {
 
     @Test
     void shouldAcceptNullValuesOnUpdate() {
-        // Given
+
         Veterinario veterinario = Veterinario.builder()
                 .nome("Nome Original")
                 .location("Location Original")
@@ -196,10 +195,10 @@ class VeterinarioTest {
                 .businessHours("Horário Original")
                 .build();
         
-        // When
+
         veterinario.updateInfo("Novo Nome", null, null, null);
         
-        // Then
+
         assertEquals("Novo Nome", veterinario.getNome());
         assertNull(veterinario.getLocation());
         assertNull(veterinario.getContactNumber());
@@ -208,7 +207,7 @@ class VeterinarioTest {
 
     @Test
     void shouldValidateDifferentCrmvFormats() {
-        // Given
+
         String[] validCrmvFormats = {
             "CRMV-SP 12345",
             "CRMV/SP 12345",
@@ -219,31 +218,31 @@ class VeterinarioTest {
         };
         
         for (String crmv : validCrmvFormats) {
-            // When
+    
             Veterinario veterinario = Veterinario.builder()
                     .crmv(crmv)
                     .build();
             
-            // Then
+    
             assertTrue(veterinario.isValidCrmv(), "CRMV format '" + crmv + "' should be valid");
         }
     }
 
     @Test
     void shouldHandleSpecialCharactersInFields() {
-        // Given
+
         String nomeComTitulo = "Dr. José María González";
         String locationComAcentos = "São Paulo - Área Central";
         String businessHoursDetalhado = "Segunda à Sexta: 8h às 18h\nSábado: 8h às 12h";
         
-        // When
+
         Veterinario veterinario = Veterinario.builder()
                 .nome(nomeComTitulo)
                 .location(locationComAcentos)
                 .businessHours(businessHoursDetalhado)
                 .build();
         
-        // Then
+
         assertEquals(nomeComTitulo, veterinario.getNome());
         assertEquals(locationComAcentos, veterinario.getLocation());
         assertEquals(businessHoursDetalhado, veterinario.getBusinessHours());
@@ -251,37 +250,37 @@ class VeterinarioTest {
 
     @Test
     void shouldHandleLongContactNumbers() {
-        // Given
+
         String longContactNumber = "+55 (11) 98765-4321";
         
-        // When
+
         Veterinario veterinario = Veterinario.builder()
                 .contactNumber(longContactNumber)
                 .build();
         
         veterinario.updateInfo("Nome", "Location", "+55 (11) 12345-6789", "Horário");
         
-        // Then
+
         assertEquals("+55 (11) 12345-6789", veterinario.getContactNumber());
     }
 
     @Test
     void shouldHandleComplexBusinessHours() {
-        // Given
+
         String complexBusinessHours = "Segunda a Quinta: 8h às 18h\nSexta: 8h às 17h\nSábado: 8h às 12h\nDomingo: Plantão 24h\nFeriados: Consultar";
         
-        // When
+
         Veterinario veterinario = Veterinario.builder()
                 .businessHours(complexBusinessHours)
                 .build();
         
-        // Then
+
         assertEquals(complexBusinessHours, veterinario.getBusinessHours());
     }
 
     @Test
     void shouldAllowUpdateWithSameValues() {
-        // Given
+
         Veterinario veterinario = Veterinario.builder()
                 .nome("Dr. Silva")
                 .location("São Paulo")
@@ -292,10 +291,10 @@ class VeterinarioTest {
         
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When - Update with same values
+        // Update with same values
         veterinario.updateInfo("Dr. Silva", "São Paulo", "11999999999", "8h às 18h");
         
-        // Then - Should still update the timestamp
+        // Should still update the timestamp
         assertTrue(veterinario.getUpdatedAt().isAfter(timeBeforeUpdate));
         assertEquals("Dr. Silva", veterinario.getNome());
         assertEquals("São Paulo", veterinario.getLocation());
@@ -303,22 +302,22 @@ class VeterinarioTest {
 
     @Test
     void shouldHandleCrmvWithSpacesAndSpecialCharacters() {
-        // Given
+
         String crmvWithSpaces = " CRMV-SP 12345 ";
         
-        // When
+
         Veterinario veterinario = Veterinario.builder()
                 .crmv(crmvWithSpaces)
                 .build();
         
-        // Then
+
         assertTrue(veterinario.isValidCrmv());
         assertEquals(crmvWithSpaces, veterinario.getCrmv());
     }
 
     @Test
     void shouldMaintainDataIntegrityAfterMultipleUpdates() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalUserId = UUID.randomUUID();
         String originalCrmv = "CRMV-SP 12345";
@@ -333,12 +332,12 @@ class VeterinarioTest {
                 .businessHours("Horário Original")
                 .build();
         
-        // When - Multiple updates
+        // Multiple updates
         veterinario.updateInfo("Dr. Primeira Mudança", "Local 1", "22222222222", "Horário 1");
         veterinario.updateInfo("Dr. Segunda Mudança", "Local 2", "33333333333", "Horário 2");
         veterinario.updateInfo("Dr. Terceira Mudança", "Local 3", "44444444444", "Horário 3");
         
-        // Then - Immutable fields should remain unchanged
+        // Immutable fields should remain unchanged
         assertEquals(originalId, veterinario.getId());
         assertEquals(originalUserId, veterinario.getUserId());
         assertEquals(originalCrmv, veterinario.getCrmv());

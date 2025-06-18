@@ -41,7 +41,7 @@ public class DataEncryptionService {
         }
         
         try {
-            // Gerar IV aleatório para cada operação
+
             byte[] iv = new byte[16];
             new SecureRandom().nextBytes(iv);
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
@@ -50,7 +50,7 @@ public class DataEncryptionService {
             cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(), ivSpec);
             byte[] encryptedData = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
             
-            // Combinar IV + dados criptografados
+
             byte[] encryptedWithIv = new byte[iv.length + encryptedData.length];
             System.arraycopy(iv, 0, encryptedWithIv, 0, iv.length);
             System.arraycopy(encryptedData, 0, encryptedWithIv, iv.length, encryptedData.length);
@@ -73,12 +73,11 @@ public class DataEncryptionService {
         try {
             byte[] encryptedWithIv = Base64.getDecoder().decode(encryptedText);
             
-            // Extrair IV (primeiros 16 bytes)
+
             byte[] iv = new byte[16];
             System.arraycopy(encryptedWithIv, 0, iv, 0, iv.length);
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
             
-            // Extrair dados criptografados
             byte[] encryptedData = new byte[encryptedWithIv.length - iv.length];
             System.arraycopy(encryptedWithIv, iv.length, encryptedData, 0, encryptedData.length);
             

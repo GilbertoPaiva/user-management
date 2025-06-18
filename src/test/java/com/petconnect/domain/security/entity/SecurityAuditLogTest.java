@@ -3,9 +3,6 @@ package com.petconnect.domain.security.entity;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 class SecurityAuditLogTest {
 
     @Test

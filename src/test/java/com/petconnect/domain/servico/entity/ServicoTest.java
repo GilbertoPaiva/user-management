@@ -11,13 +11,13 @@ class ServicoTest {
 
     @Test
     void shouldCreateServicoWithRequiredFields() {
-        // Given
+
         UUID id = UUID.randomUUID();
         UUID veterinarioId = UUID.randomUUID();
         String nome = "Consulta Veterinária";
         BigDecimal price = new BigDecimal("80.00");
         
-        // When
+
         Servico servico = Servico.builder()
                 .id(id)
                 .veterinarioId(veterinarioId)
@@ -28,7 +28,7 @@ class ServicoTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         
-        // Then
+
         assertNotNull(servico);
         assertEquals(id, servico.getId());
         assertEquals(veterinarioId, servico.getVeterinarioId());
@@ -39,7 +39,7 @@ class ServicoTest {
 
     @Test
     void shouldUpdateServicoInfo() {
-        // Given
+
         Servico servico = Servico.builder()
                 .nome("Nome Antigo")
                 .description("Descrição Antiga")
@@ -52,10 +52,10 @@ class ServicoTest {
         BigDecimal novoPreco = new BigDecimal("75.50");
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // When
+
         servico.updateInfo(novoNome, novaDescricao, novoPreco);
         
-        // Then
+
         assertEquals(novoNome, servico.getNome());
         assertEquals(novaDescricao, servico.getDescription());
         assertEquals(novoPreco, servico.getPrice());
@@ -64,58 +64,57 @@ class ServicoTest {
 
     @Test
     void shouldValidateValidPrice() {
-        // Given
+
         Servico servicoValidPrice = Servico.builder()
                 .price(new BigDecimal("100.50"))
                 .build();
         
-        // When & Then
+
         assertTrue(servicoValidPrice.isValidPrice());
     }
 
     @Test
     void shouldInvalidateZeroPrice() {
-        // Given
+
         Servico servicoZeroPrice = Servico.builder()
                 .price(BigDecimal.ZERO)
                 .build();
         
-        // When & Then
+
         assertFalse(servicoZeroPrice.isValidPrice());
     }
 
     @Test
     void shouldInvalidateNegativePrice() {
-        // Given
+
         Servico servicoNegativePrice = Servico.builder()
                 .price(new BigDecimal("-10.00"))
                 .build();
         
-        // When & Then
+
         assertFalse(servicoNegativePrice.isValidPrice());
     }
 
     @Test
     void shouldInvalidateNullPrice() {
-        // Given
+
         Servico servicoNullPrice = Servico.builder()
                 .price(null)
                 .build();
         
-        // When & Then
+
         assertFalse(servicoNullPrice.isValidPrice());
     }
 
     @Test
     void shouldCreateServicoWithMinimalData() {
-        // Given & When
         Servico servico = Servico.builder()
                 .veterinarioId(UUID.randomUUID())
                 .nome("Serviço Básico")
                 .price(new BigDecimal("25.00"))
                 .build();
         
-        // Then
+
         assertNotNull(servico);
         assertNotNull(servico.getVeterinarioId());
         assertEquals("Serviço Básico", servico.getNome());
@@ -127,7 +126,7 @@ class ServicoTest {
 
     @Test
     void shouldHandleDecimalPrices() {
-        // Given
+
         BigDecimal[] validPrices = {
             new BigDecimal("0.01"),
             new BigDecimal("99.99"),
@@ -137,19 +136,19 @@ class ServicoTest {
         };
         
         for (BigDecimal price : validPrices) {
-            // When
+    
             Servico servico = Servico.builder()
                     .price(price)
                     .build();
             
-            // Then
+    
             assertTrue(servico.isValidPrice(), "Price " + price + " should be valid");
         }
     }
 
     @Test
     void shouldUpdateTimestampOnUpdate() {
-        // Given
+
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Servico servico = Servico.builder()
                 .nome("Nome Original")
@@ -158,17 +157,17 @@ class ServicoTest {
                 .updatedAt(originalTime)
                 .build();
         
-        // When
+
         servico.updateInfo("Nome Atualizado", "Descrição Atualizada", new BigDecimal("35.00"));
         
-        // Then
+
         assertTrue(servico.getUpdatedAt().isAfter(originalTime));
         assertTrue(servico.getUpdatedAt().isAfter(LocalDateTime.now().minusMinutes(1)));
     }
 
     @Test
     void shouldMaintainImmutableFieldsOnUpdate() {
-        // Given
+
         UUID originalId = UUID.randomUUID();
         UUID originalVeterinarioId = UUID.randomUUID();
         LocalDateTime originalCreatedAt = LocalDateTime.now().minusDays(1);
@@ -183,10 +182,10 @@ class ServicoTest {
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
         
-        // When
+
         servico.updateInfo("Novo Nome", "Nova Descrição", new BigDecimal("40.00"));
         
-        // Then
+
         assertEquals(originalId, servico.getId());
         assertEquals(originalVeterinarioId, servico.getVeterinarioId());
         assertEquals(originalCreatedAt, servico.getCreatedAt());
@@ -197,17 +196,17 @@ class ServicoTest {
 
     @Test
     void shouldAcceptNullDescriptionOnUpdate() {
-        // Given
+
         Servico servico = Servico.builder()
                 .nome("Nome Original")
                 .description("Descrição Original")
                 .price(new BigDecimal("30.00"))
                 .build();
         
-        // When
+
         servico.updateInfo("Novo Nome", null, new BigDecimal("35.00"));
         
-        // Then
+
         assertEquals("Novo Nome", servico.getNome());
         assertNull(servico.getDescription());
         assertEquals(new BigDecimal("35.00"), servico.getPrice());
@@ -215,7 +214,7 @@ class ServicoTest {
 
     @Test
     void shouldComparePricesCorrectly() {
-        // Given
+
         Servico servico1 = Servico.builder()
                 .price(new BigDecimal("50.00"))
                 .build();
@@ -228,7 +227,7 @@ class ServicoTest {
                 .price(new BigDecimal("75.00"))
                 .build();
         
-        // When & Then
+
         assertEquals(0, servico1.getPrice().compareTo(servico2.getPrice()));
         assertTrue(servico3.getPrice().compareTo(servico1.getPrice()) > 0);
         assertTrue(servico1.getPrice().compareTo(servico3.getPrice()) < 0);

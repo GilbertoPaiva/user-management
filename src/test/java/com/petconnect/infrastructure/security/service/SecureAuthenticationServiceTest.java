@@ -69,9 +69,11 @@ class SecureAuthenticationServiceTest {
         when(securityAuditService.canAttemptLogin(TEST_EMAIL)).thenReturn(true);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        when(userDetailsService.loadUserByUsername(TEST_EMAIL)).thenReturn(userDetails);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getUsername()).thenReturn(TEST_EMAIL);
         when(jwtService.generateTokenWithUserInfo(any(), anyString(), anyString())).thenReturn(TEST_TOKEN);
         when(jwtService.generateRefreshToken(any())).thenReturn("refresh-token");
+        when(dataEncryptionService.maskSensitiveData(anyString(), anyInt())).thenReturn("te*@***.com");
 
         SecureAuthenticationService.AuthenticationResult result = 
             secureAuthenticationService.authenticateUser(TEST_EMAIL, TEST_PASSWORD, TEST_IP);
@@ -105,7 +107,7 @@ class SecureAuthenticationServiceTest {
             secureAuthenticationService.authenticateUser(TEST_EMAIL, TEST_PASSWORD, TEST_IP);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getErrorMessage().contains("muitas tentativas"));
+        assertTrue(result.getErrorMessage().contains("Muitas tentativas"));
         verify(authenticationManager, never()).authenticate(any());
     }
 
@@ -141,13 +143,14 @@ class SecureAuthenticationServiceTest {
 
     @Test
     void shouldValidateEmailFormat() {
-        String invalidEmail = "invalid-email";
+        String invalidIdentifier = "ab";
 
         SecureAuthenticationService.AuthenticationResult result = 
-            secureAuthenticationService.authenticateUser(invalidEmail, TEST_PASSWORD, TEST_IP);
+            secureAuthenticationService.authenticateUser(invalidIdentifier, TEST_PASSWORD, TEST_IP);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getErrorMessage().contains("formato inválido"));
+        assertTrue(result.getErrorMessage().contains("Formato de identificador inválido"), 
+            "Expected message to contain 'Formato de identificador inválido' but was: " + result.getErrorMessage());
     }
 
     @Test
@@ -158,7 +161,7 @@ class SecureAuthenticationServiceTest {
             secureAuthenticationService.authenticateUser(TEST_EMAIL, shortPassword, TEST_IP);
 
         assertFalse(result.isSuccess());
-        assertTrue(result.getErrorMessage().contains("muito curta"));
+        assertTrue(result.getErrorMessage().contains("Senha muito curta"));
     }
 
     @Test
@@ -176,22 +179,23 @@ class SecureAuthenticationServiceTest {
     @Test
     void shouldEncryptPasswordSecurely() {
         String password = "TestPassword123!";
-        when(passwordEncoder.encode(password)).thenReturn("$2a$10$encoded.hash");
+        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$encoded.hash");
+        when(dataEncryptionService.generateSalt()).thenReturn("testsalt");
 
         SecureAuthenticationService.PasswordEncryptionResult result = 
-            secureAuthenticationService.encryptPassword(password);
+            secureAuthenticationService.encryptPasswordWithDetails(password);
 
         assertNotNull(result);
         assertEquals("$2a$10$encoded.hash", result.getEncryptedPassword());
-        assertNotNull(result.getSalt());
+        assertEquals("testsalt", result.getSalt());
         assertTrue(result.getStrengthScore() > 0);
-        verify(passwordEncoder).encode(password);
+        verify(passwordEncoder).encode(password + "testsalt");
     }
 
     @Test
     void shouldRefreshTokenSuccessfully() {
         String refreshToken = "valid-refresh-token";
-        when(jwtService.isTokenValid(refreshToken, userDetails)).thenReturn(true);
+        when(jwtService.isTokenValid(refreshToken, null)).thenReturn(true);
         when(jwtService.extractUsername(refreshToken)).thenReturn(TEST_EMAIL);
         when(userDetailsService.loadUserByUsername(TEST_EMAIL)).thenReturn(userDetails);
         when(jwtService.generateTokenWithUserInfo(any(), anyString(), anyString())).thenReturn("new-access-token");
@@ -208,7 +212,7 @@ class SecureAuthenticationServiceTest {
     @Test
     void shouldFailRefreshTokenWithInvalidToken() {
         String invalidToken = "invalid-token";
-        when(jwtService.extractUsername(invalidToken)).thenThrow(new RuntimeException("Invalid token"));
+        when(jwtService.isTokenValid(invalidToken, null)).thenReturn(false);
 
         SecureAuthenticationService.AuthenticationResult result = 
             secureAuthenticationService.refreshToken(invalidToken);

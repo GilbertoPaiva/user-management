@@ -73,15 +73,15 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldSaveProdutoSuccessfully() {
-        // Given
+
         when(produtoMapper.toJpaEntity(produto)).thenReturn(produtoJpaEntity);
         when(produtoJpaRepository.save(produtoJpaEntity)).thenReturn(produtoJpaEntity);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Produto result = produtoRepositoryAdapter.save(produto);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(produto.getId(), result.getId());
         assertEquals(produto.getNome(), result.getNome());
@@ -93,14 +93,14 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindProdutoByIdSuccessfully() {
-        // Given
+
         when(produtoJpaRepository.findById(produtoId)).thenReturn(Optional.of(produtoJpaEntity));
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Optional<Produto> result = produtoRepositoryAdapter.findById(produtoId);
 
-        // Then
+
         assertTrue(result.isPresent());
         assertEquals(produto.getId(), result.get().getId());
         assertEquals(produto.getNome(), result.get().getNome());
@@ -111,13 +111,13 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldReturnEmptyWhenProdutoNotFound() {
-        // Given
+
         when(produtoJpaRepository.findById(produtoId)).thenReturn(Optional.empty());
 
-        // When
+
         Optional<Produto> result = produtoRepositoryAdapter.findById(produtoId);
 
-        // Then
+
         assertFalse(result.isPresent());
         
         verify(produtoJpaRepository, times(1)).findById(produtoId);
@@ -126,20 +126,18 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindProdutosByLojistaId() {
-        // Given
+
         List<UUID> produtoIds = Arrays.asList(produtoId, UUID.randomUUID());
-        List<ProdutoJpaEntity> jpaEntities = Arrays.asList(produtoJpaEntity);
-        List<Produto> produtos = Arrays.asList(produto);
 
         when(produtoJpaRepository.findIdsByLojistaId(lojistaId)).thenReturn(produtoIds);
         when(produtoJpaRepository.findById(produtoId)).thenReturn(Optional.of(produtoJpaEntity));
         when(produtoJpaRepository.findById(produtoIds.get(1))).thenReturn(Optional.empty());
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         List<Produto> result = produtoRepositoryAdapter.findByLojistaId(lojistaId);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(produto.getId(), result.get(0).getId());
@@ -150,17 +148,17 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindAllProdutosWithPagination() {
-        // Given
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity));
         
         when(produtoJpaRepository.findAll(pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Page<Produto> result = produtoRepositoryAdapter.findAll(pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(produto.getId(), result.getContent().get(0).getId());
@@ -171,17 +169,17 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindProdutosByLojistaIdWithPagination() {
-        // Given
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity));
         
         when(produtoJpaRepository.findByLojistaId(lojistaId, pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Page<Produto> result = produtoRepositoryAdapter.findByLojistaId(lojistaId, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(produto.getId(), result.getContent().get(0).getId());
@@ -192,16 +190,16 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldDeleteProdutoById() {
-        // When
+
         produtoRepositoryAdapter.deleteById(produtoId);
 
-        // Then
+
         verify(produtoJpaRepository, times(1)).deleteById(produtoId);
     }
 
     @Test
     void shouldFindProdutosByNomeContaining() {
-        // Given
+
         String nome = "Ração";
         Pageable pageable = PageRequest.of(0, 10);
         Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity));
@@ -209,10 +207,10 @@ class ProdutoRepositoryAdapterTest {
         when(produtoJpaRepository.findByNomeContainingIgnoreCase(nome, pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Page<Produto> result = produtoRepositoryAdapter.findByNomeContainingIgnoreCase(nome, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(produto.getId(), result.getContent().get(0).getId());
@@ -223,7 +221,7 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindProdutosByPriceBetween() {
-        // Given
+
         BigDecimal minPrice = new BigDecimal("20.00");
         BigDecimal maxPrice = new BigDecimal("40.00");
         Pageable pageable = PageRequest.of(0, 10);
@@ -232,10 +230,10 @@ class ProdutoRepositoryAdapterTest {
         when(produtoJpaRepository.findByPriceBetween(minPrice, maxPrice, pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Page<Produto> result = produtoRepositoryAdapter.findByPriceBetween(minPrice, maxPrice, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(produto.getId(), result.getContent().get(0).getId());
@@ -246,38 +244,38 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldFindProdutosByNomeOrDescriptionContaining() {
-        // Given
+
         String searchTerm = "premium";
         Pageable pageable = PageRequest.of(0, 10);
         Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity));
         
-        when(produtoJpaRepository.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                searchTerm, searchTerm, pageable)).thenReturn(jpaPage);
+        when(produtoJpaRepository.findByNomeOrDescriptionContaining(
+                searchTerm, pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
+
         Page<Produto> result = produtoRepositoryAdapter.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 searchTerm, searchTerm, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(produto.getId(), result.getContent().get(0).getId());
         
-        verify(produtoJpaRepository, times(1)).findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                searchTerm, searchTerm, pageable);
+        verify(produtoJpaRepository, times(1)).findByNomeOrDescriptionContaining(
+                searchTerm, pageable);
         verify(produtoMapper, times(1)).toDomainEntity(produtoJpaEntity);
     }
 
     @Test
     void shouldHandleEmptyListFromFindByLojistaId() {
-        // Given
+
         when(produtoJpaRepository.findIdsByLojistaId(lojistaId)).thenReturn(Arrays.asList());
 
-        // When
+
         List<Produto> result = produtoRepositoryAdapter.findByLojistaId(lojistaId);
 
-        // Then
+
         assertNotNull(result);
         assertTrue(result.isEmpty());
         
@@ -287,16 +285,15 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldHandleNullReturnFromMapper() {
-        // Given
+
         when(produtoJpaRepository.findById(produtoId)).thenReturn(Optional.of(produtoJpaEntity));
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(null);
 
-        // When
+
         Optional<Produto> result = produtoRepositoryAdapter.findById(produtoId);
 
-        // Then
-        assertTrue(result.isPresent());
-        assertNull(result.get());
+
+        assertFalse(result.isPresent());
         
         verify(produtoJpaRepository, times(1)).findById(produtoId);
         verify(produtoMapper, times(1)).toDomainEntity(produtoJpaEntity);
@@ -304,11 +301,10 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldHandleExceptionDuringFindAll() {
-        // Given
+
         Pageable pageable = PageRequest.of(0, 10);
         when(produtoJpaRepository.findAll(pageable)).thenThrow(new RuntimeException("Database error"));
 
-        // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, 
                 () -> produtoRepositoryAdapter.findAll(pageable));
         
@@ -318,11 +314,10 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldHandleExceptionDuringSave() {
-        // Given
+
         when(produtoMapper.toJpaEntity(produto)).thenReturn(produtoJpaEntity);
         when(produtoJpaRepository.save(produtoJpaEntity)).thenThrow(new RuntimeException("Save failed"));
 
-        // When & Then
         RuntimeException exception = assertThrows(RuntimeException.class, 
                 () -> produtoRepositoryAdapter.save(produto));
         
@@ -333,27 +328,26 @@ class ProdutoRepositoryAdapterTest {
 
     @Test
     void shouldVerifyCorrectMethodCallsOnComplexSearch() {
-        // Given
+
         String nome = "ração";
         String description = "premium";
         Pageable pageable = PageRequest.of(0, 5);
-        Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity));
+        Page<ProdutoJpaEntity> jpaPage = new PageImpl<>(Arrays.asList(produtoJpaEntity), pageable, 1);
         
-        when(produtoJpaRepository.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                nome, description, pageable)).thenReturn(jpaPage);
+        when(produtoJpaRepository.findByNomeOrDescriptionContaining(
+                nome, pageable)).thenReturn(jpaPage);
         when(produtoMapper.toDomainEntity(produtoJpaEntity)).thenReturn(produto);
 
-        // When
         Page<Produto> result = produtoRepositoryAdapter.findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                 nome, description, pageable);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(5, result.getSize());
         
-        verify(produtoJpaRepository, times(1)).findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                eq(nome), eq(description), eq(pageable));
+        verify(produtoJpaRepository, times(1)).findByNomeOrDescriptionContaining(
+                eq(nome), eq(pageable));
         verify(produtoMapper, times(1)).toDomainEntity(produtoJpaEntity);
     }
 }

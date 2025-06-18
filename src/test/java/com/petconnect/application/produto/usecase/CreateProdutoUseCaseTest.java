@@ -44,7 +44,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldCreateProdutoSuccessfully() {
-        // Given
+
         Produto savedProduto = Produto.builder()
                 .id(UUID.randomUUID())
                 .lojistaId(lojistaId)
@@ -57,10 +57,10 @@ class CreateProdutoUseCaseTest {
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(savedProduto);
 
-        // When
+
         Produto result = createProdutoUseCase.execute(validCommand);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(lojistaId, result.getLojistaId());
         assertEquals("Ração Premium", result.getNome());
@@ -73,7 +73,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenNomeIsNull() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome(null)
@@ -81,7 +81,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -91,7 +91,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenNomeIsEmpty() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome("   ")
@@ -99,7 +99,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -109,7 +109,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsNull() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome("Ração Premium")
@@ -117,7 +117,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -127,7 +127,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsZero() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome("Ração Premium")
@@ -135,7 +135,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -145,7 +145,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsNegative() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome("Ração Premium")
@@ -153,7 +153,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -163,7 +163,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenLojistaIdIsNull() {
-        // Given
+
         CreateProdutoCommand invalidCommand = CreateProdutoCommand.builder()
                 .lojistaId(null)
                 .nome("Ração Premium")
@@ -171,7 +171,7 @@ class CreateProdutoUseCaseTest {
                 .unitOfMeasure("kg")
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createProdutoUseCase.execute(invalidCommand));
         
@@ -181,7 +181,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldCreateProdutoWithoutOptionalFields() {
-        // Given
+
         CreateProdutoCommand minimalCommand = CreateProdutoCommand.builder()
                 .lojistaId(lojistaId)
                 .nome("Produto Básico")
@@ -199,10 +199,10 @@ class CreateProdutoUseCaseTest {
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(savedProduto);
 
-        // When
+
         Produto result = createProdutoUseCase.execute(minimalCommand);
 
-        // Then
+
         assertNotNull(result);
         assertEquals("Produto Básico", result.getNome());
         assertNull(result.getDescription());
@@ -213,7 +213,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldCreateProdutoWithDecimalPrice() {
-        // Given
+
         validCommand.setPrice(new BigDecimal("15.99"));
         
         Produto savedProduto = Produto.builder()
@@ -226,10 +226,10 @@ class CreateProdutoUseCaseTest {
 
         when(produtoRepository.save(any(Produto.class))).thenReturn(savedProduto);
 
-        // When
+
         Produto result = createProdutoUseCase.execute(validCommand);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(new BigDecimal("15.99"), result.getPrice());
         
@@ -238,7 +238,7 @@ class CreateProdutoUseCaseTest {
 
     @Test
     void shouldVerifyProdutoFieldsAreSetCorrectly() {
-        // Given
+
         when(produtoRepository.save(any(Produto.class))).thenAnswer(invocation -> {
             Produto produto = invocation.getArgument(0);
             // Verify that created and updated timestamps are set
@@ -247,10 +247,10 @@ class CreateProdutoUseCaseTest {
             return produto;
         });
 
-        // When
+
         createProdutoUseCase.execute(validCommand);
 
-        // Then
+
         verify(produtoRepository, times(1)).save(argThat(produto -> 
             produto.getLojistaId().equals(lojistaId) &&
             produto.getNome().equals("Ração Premium") &&

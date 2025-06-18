@@ -10,9 +10,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
-/**
- * Entidade JPA para logs de auditoria de segurança
- */
 @Entity
 @Table(name = "security_audit_logs", 
        indexes = {

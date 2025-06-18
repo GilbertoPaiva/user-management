@@ -42,7 +42,7 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldCreateServicoSuccessfully() {
-        // Given
+
         Servico savedServico = Servico.builder()
                 .id(UUID.randomUUID())
                 .veterinarioId(veterinarioId)
@@ -53,10 +53,10 @@ class CreateServicoUseCaseTest {
 
         when(servicoRepository.save(any(Servico.class))).thenReturn(savedServico);
 
-        // When
+
         Servico result = createServicoUseCase.execute(validCommand);
 
-        // Then
+
         assertNotNull(result);
         assertEquals(veterinarioId, result.getVeterinarioId());
         assertEquals("Consulta Veterinária", result.getNome());
@@ -68,14 +68,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenNomeIsNull() {
-        // Given
+
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome(null)
                 .price(new BigDecimal("80.00"))
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createServicoUseCase.execute(invalidCommand));
         
@@ -85,14 +85,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenNomeIsEmpty() {
-        // Given
+
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("   ")
                 .price(new BigDecimal("80.00"))
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createServicoUseCase.execute(invalidCommand));
         
@@ -102,14 +102,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsNull() {
-        // Given
+
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Consulta Veterinária")
                 .price(null)
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createServicoUseCase.execute(invalidCommand));
         
@@ -119,14 +119,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsInvalidFormat() {
-        // Given - Testing the regex validation for price format
+        // Testing the regex validation for price format
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Consulta Veterinária")
                 .price(new BigDecimal("80.999")) // More than 2 decimal places
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createServicoUseCase.execute(invalidCommand));
         
@@ -136,14 +136,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenVeterinarioIdIsNull() {
-        // Given
+
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(null)
                 .nome("Consulta Veterinária")
                 .price(new BigDecimal("80.00"))
                 .build();
 
-        // When & Then
+
         BadRequestException exception = assertThrows(BadRequestException.class, 
                 () -> createServicoUseCase.execute(invalidCommand));
         
@@ -153,7 +153,7 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldCreateServicoWithoutOptionalDescription() {
-        // Given
+
         CreateServicoCommand minimalCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Vacinação")
@@ -169,10 +169,10 @@ class CreateServicoUseCaseTest {
 
         when(servicoRepository.save(any(Servico.class))).thenReturn(savedServico);
 
-        // When
+
         Servico result = createServicoUseCase.execute(minimalCommand);
 
-        // Then
+
         assertNotNull(result);
         assertEquals("Vacinação", result.getNome());
         assertNull(result.getDescription());
@@ -182,7 +182,7 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldAcceptValidPriceFormats() {
-        // Given - Testing valid price formats
+        // Testing valid price formats
         CreateServicoCommand[] validCommands = {
             CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
@@ -205,7 +205,7 @@ class CreateServicoUseCaseTest {
             Servico.builder().id(UUID.randomUUID()).build()
         );
 
-        // When & Then
+
         for (CreateServicoCommand command : validCommands) {
             assertDoesNotThrow(() -> createServicoUseCase.execute(command));
         }
@@ -215,7 +215,7 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldVerifyServicoFieldsAreSetCorrectly() {
-        // Given
+
         when(servicoRepository.save(any(Servico.class))).thenAnswer(invocation -> {
             Servico servico = invocation.getArgument(0);
             // Verify that ID, created and updated timestamps are set
@@ -225,10 +225,10 @@ class CreateServicoUseCaseTest {
             return servico;
         });
 
-        // When
+
         createServicoUseCase.execute(validCommand);
 
-        // Then
+
         verify(servicoRepository, times(1)).save(argThat(servico -> 
             servico.getVeterinarioId().equals(veterinarioId) &&
             servico.getNome().equals("Consulta Veterinária") &&
@@ -242,14 +242,14 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldGenerateUniqueIdForEachServico() {
-        // Given
+
         when(servicoRepository.save(any(Servico.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
+
         Servico servico1 = createServicoUseCase.execute(validCommand);
         Servico servico2 = createServicoUseCase.execute(validCommand);
 
-        // Then
+
         assertNotNull(servico1.getId());
         assertNotNull(servico2.getId());
         assertNotEquals(servico1.getId(), servico2.getId());
@@ -257,7 +257,7 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldAcceptZeroPriceIfMatchesRegex() {
-        // Given - Test edge case where 0 might be valid according to regex
+        // Test edge case where 0 might be valid according to regex
         CreateServicoCommand zeroCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Consulta Gratuita")
@@ -268,14 +268,14 @@ class CreateServicoUseCaseTest {
             Servico.builder().id(UUID.randomUUID()).build()
         );
 
-        // When & Then
+
         assertDoesNotThrow(() -> createServicoUseCase.execute(zeroCommand));
         verify(servicoRepository, times(1)).save(any(Servico.class));
     }
 
     @Test
     void shouldHandleLargeValidPrices() {
-        // Given
+
         CreateServicoCommand expensiveCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Cirurgia Complexa")
@@ -286,7 +286,7 @@ class CreateServicoUseCaseTest {
             Servico.builder().id(UUID.randomUUID()).build()
         );
 
-        // When & Then
+
         assertDoesNotThrow(() -> createServicoUseCase.execute(expensiveCommand));
         verify(servicoRepository, times(1)).save(any(Servico.class));
     }

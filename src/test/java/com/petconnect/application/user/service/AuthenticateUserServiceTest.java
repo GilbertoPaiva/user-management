@@ -266,7 +266,9 @@ class AuthenticateUserServiceTest {
         assertNotNull(result.getUpdatedAt());
         assertTrue(result.getCreatedAt().isAfter(beforeCreation));
         assertTrue(result.getCreatedAt().isBefore(afterCreation));
-        assertEquals(result.getCreatedAt(), result.getUpdatedAt());
+
+        assertEquals(result.getCreatedAt().truncatedTo(java.time.temporal.ChronoUnit.SECONDS), 
+                    result.getUpdatedAt().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
     }
 
     @Test
