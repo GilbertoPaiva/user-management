@@ -216,3 +216,7 @@ application-staging.properties
 
 # Documentation that should be committed
 !HELP.md
+
+# Allow password-related source code files (but not config files)
+!src/**/*Password*.java
+!src/**/*password*.java
