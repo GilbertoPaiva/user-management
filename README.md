@@ -1,7 +1,7 @@
 # 🐾 Pet Connect - Sistema de Gestão Pet
 
 ## 📋 Visão Geral
-
+.
 O **Pet Connect** é uma plataforma completa que conecta tutores, veterinários, lojistas e administradores no universo pet. Desenvolvido seguindo os princípios **SOLID**, **Clean Architecture** e **Arquitetura Hexagonal** com Spring Boot e PostgreSQL.
 
 ### 🎯 Objetivo
