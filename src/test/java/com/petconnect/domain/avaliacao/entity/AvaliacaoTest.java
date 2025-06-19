@@ -359,18 +359,16 @@ class AvaliacaoTest {
                 .ativo(true)
                 .build();
         
-        // Change status multiple times
         avaliacao.desativar();
         avaliacao.ativar();
         avaliacao.desativar();
         
-        // Other fields should remain unchanged
         assertEquals(entidadeId, avaliacao.getEntidadeId());
         assertEquals(Avaliacao.TipoEntidade.SERVICO, avaliacao.getTipoEntidade());
         assertEquals(autorId, avaliacao.getAutorId());
         assertEquals(autorNome, avaliacao.getAutorNome());
         assertEquals(nota, avaliacao.getNota());
         assertEquals(comentario, avaliacao.getComentario());
-        assertFalse(avaliacao.isAtivo()); // Should be deactivated (last operation)
+        assertFalse(avaliacao.isAtivo()); 
     }
 }

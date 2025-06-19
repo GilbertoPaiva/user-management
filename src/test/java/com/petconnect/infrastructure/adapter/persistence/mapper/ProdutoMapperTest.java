@@ -280,7 +280,6 @@ class ProdutoMapperTest {
         assertNotNull(jpaEntity);
         assertNotNull(mappedBackProduto);
         
-        // Verify all fields are preserved
         assertEquals(originalProduto.getId(), mappedBackProduto.getId());
         assertEquals(originalProduto.getLojistaId(), mappedBackProduto.getLojistaId());
         assertEquals(originalProduto.getNome(), mappedBackProduto.getNome());

@@ -119,7 +119,6 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldThrowExceptionWhenPriceIsInvalidFormat() {
-        // Testing the regex validation for price format
         CreateServicoCommand invalidCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Consulta Veterinária")
@@ -182,7 +181,6 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldAcceptValidPriceFormats() {
-        // Testing valid price formats
         CreateServicoCommand[] validCommands = {
             CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
@@ -218,7 +216,6 @@ class CreateServicoUseCaseTest {
 
         when(servicoRepository.save(any(Servico.class))).thenAnswer(invocation -> {
             Servico servico = invocation.getArgument(0);
-            // Verify that ID, created and updated timestamps are set
             assertNotNull(servico.getId());
             assertNotNull(servico.getCreatedAt());
             assertNotNull(servico.getUpdatedAt());
@@ -257,7 +254,6 @@ class CreateServicoUseCaseTest {
 
     @Test
     void shouldAcceptZeroPriceIfMatchesRegex() {
-        // Test edge case where 0 might be valid according to regex
         CreateServicoCommand zeroCommand = CreateServicoCommand.builder()
                 .veterinarioId(veterinarioId)
                 .nome("Consulta Gratuita")

@@ -16,7 +16,6 @@ public class TemporaryTest {
         System.out.println("valid email: " + service.isValidEmail("test@example.com"));
         System.out.println("invalid email: " + service.isValidEmail("invalid-email"));
         
-        // Test the authenticate method
         SecureAuthenticationService.AuthenticationResult result = 
             service.authenticateUser("invalid-email", "ValidPassword123!", "127.0.0.1");
             

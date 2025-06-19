@@ -33,7 +33,6 @@ public class UserRoleJpaEntity {
             this.roleId = roleId;
         }
         
-        // getters, setters, equals, hashCode
         public UUID getUserId() { return userId; }
         public void setUserId(UUID userId) { this.userId = userId; }
         public UUID getRoleId() { return roleId; }

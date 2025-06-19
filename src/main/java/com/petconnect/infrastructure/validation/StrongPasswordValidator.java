@@ -14,7 +14,6 @@ public class StrongPasswordValidator implements ConstraintValidator<StrongPasswo
     
     @Override
     public void initialize(StrongPassword constraintAnnotation) {
-        // Inicialização se necessária
     }
     
     @Override

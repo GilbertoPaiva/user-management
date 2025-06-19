@@ -10,7 +10,6 @@ public class TestBCrypt {
         System.out.println("Hash from DB: " + hashFromDB);
         System.out.println("Matches: " + encoder.matches(rawPassword, hashFromDB));
         
-        // Gerar um novo hash para comparar
         String newHash = encoder.encode(rawPassword);
         System.out.println("New hash: " + newHash);
         System.out.println("New hash matches: " + encoder.matches(rawPassword, newHash));

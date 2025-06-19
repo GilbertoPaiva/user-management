@@ -358,7 +358,6 @@ spring.flyway.enabled=true
 
 ### 🌐 CORS
 ```java
-// Configurado para aceitar requisições de qualquer origem em desenvolvimento
 @CrossOrigin(origins = "*")
 ```
 

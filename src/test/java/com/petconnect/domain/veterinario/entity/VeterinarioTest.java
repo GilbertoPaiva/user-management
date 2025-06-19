@@ -291,10 +291,8 @@ class VeterinarioTest {
         
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // Update with same values
         veterinario.updateInfo("Dr. Silva", "São Paulo", "11999999999", "8h às 18h");
         
-        // Should still update the timestamp
         assertTrue(veterinario.getUpdatedAt().isAfter(timeBeforeUpdate));
         assertEquals("Dr. Silva", veterinario.getNome());
         assertEquals("São Paulo", veterinario.getLocation());
@@ -332,17 +330,14 @@ class VeterinarioTest {
                 .businessHours("Horário Original")
                 .build();
         
-        // Multiple updates
         veterinario.updateInfo("Dr. Primeira Mudança", "Local 1", "22222222222", "Horário 1");
         veterinario.updateInfo("Dr. Segunda Mudança", "Local 2", "33333333333", "Horário 2");
         veterinario.updateInfo("Dr. Terceira Mudança", "Local 3", "44444444444", "Horário 3");
         
-        // Immutable fields should remain unchanged
         assertEquals(originalId, veterinario.getId());
         assertEquals(originalUserId, veterinario.getUserId());
         assertEquals(originalCrmv, veterinario.getCrmv());
         
-        // And mutable fields should have the latest values
         assertEquals("Dr. Terceira Mudança", veterinario.getNome());
         assertEquals("Local 3", veterinario.getLocation());
         assertEquals("44444444444", veterinario.getContactNumber());

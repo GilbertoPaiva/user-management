@@ -18,7 +18,6 @@ class DataEncryptionServiceTest {
     void setUp() throws Exception {
         dataEncryptionService = new DataEncryptionService();
         
-        // Configurar a chave de criptografia manualmente via reflection
         Field encryptionKeyField = DataEncryptionService.class.getDeclaredField("encryptionKey");
         encryptionKeyField.setAccessible(true);
         encryptionKeyField.set(dataEncryptionService, "MySecretKey12345");

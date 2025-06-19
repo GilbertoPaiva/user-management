@@ -266,10 +266,8 @@ class LojistaTest {
         
         LocalDateTime timeBeforeUpdate = LocalDateTime.now();
         
-        // Update with same values
         lojista.updateInfo("Pet Shop Silva", "São Paulo", "11999999999");
         
-        // Should still update the timestamp
         assertTrue(lojista.getUpdatedAt().isAfter(timeBeforeUpdate));
         assertEquals("Pet Shop Silva", lojista.getNome());
         assertEquals("São Paulo", lojista.getLocation());
@@ -293,18 +291,15 @@ class LojistaTest {
                 .contactNumber("11111111111")
                 .build();
         
-        // Multiple updates
         lojista.updateInfo("Pet Shop Primeira Mudança", "Local 1", "22222222222");
         lojista.updateInfo("Pet Shop Segunda Mudança", "Local 2", "33333333333");
         lojista.updateInfo("Pet Shop Terceira Mudança", "Local 3", "44444444444");
         
-        // Immutable fields should remain unchanged
         assertEquals(originalId, lojista.getId());
         assertEquals(originalUserId, lojista.getUserId());
         assertEquals(originalCnpj, lojista.getCnpj());
         assertEquals(originalStoreType, lojista.getStoreType());
         
-        // And mutable fields should have the latest values
         assertEquals("Pet Shop Terceira Mudança", lojista.getNome());
         assertEquals("Local 3", lojista.getLocation());
         assertEquals("44444444444", lojista.getContactNumber());

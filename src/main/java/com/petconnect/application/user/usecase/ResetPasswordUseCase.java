@@ -19,7 +19,6 @@ public class ResetPasswordUseCase {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com email: " + email));
         
-        // Retorna a primeira pergunta de segurança do usuário
         if (user.getSecurityQuestions() != null) {
             return user.getSecurityQuestions().getQuestion1();
         }
@@ -31,7 +30,6 @@ public class ResetPasswordUseCase {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com email: " + email));
         
-        // Verifica se a resposta de segurança está correta
         if (user.getSecurityQuestions() == null || 
             !user.getSecurityQuestions().getAnswer1().equals(securityAnswer)) {
             throw new IllegalArgumentException("Resposta de segurança incorreta");

@@ -241,7 +241,6 @@ class CreateProdutoUseCaseTest {
 
         when(produtoRepository.save(any(Produto.class))).thenAnswer(invocation -> {
             Produto produto = invocation.getArgument(0);
-            // Verify that created and updated timestamps are set
             assertNotNull(produto.getCreatedAt());
             assertNotNull(produto.getUpdatedAt());
             return produto;

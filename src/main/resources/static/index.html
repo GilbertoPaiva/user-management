@@ -228,15 +228,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         function accessTool() {
-            // Por enquanto, apenas mostra um alert
-            // Aqui seria redirecionado para a tela de login do sistema
             alert('Redirecionando para o sistema Pet Connect...\n\nEsta funcionalidade será implementada quando o frontend estiver conectado ao backend.');
             
-            // Futuramente seria algo como:
-            // window.location.href = '/login';
         }
 
-        // Smooth scrolling para links de navegação
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
