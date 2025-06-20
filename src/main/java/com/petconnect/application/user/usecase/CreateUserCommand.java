@@ -21,6 +21,4 @@ public class CreateUserCommand {
     private String fullName;
     private UserType userType;
     private Set<String> roles;
-    private SecurityQuestions securityQuestions;
-    private UserProfile userProfile;
 }

@@ -2,6 +2,7 @@ package com.petconnect.infrastructure.adapter.web.controller;
 
 import com.petconnect.application.user.service.AuthenticateUserService;
 import com.petconnect.application.user.usecase.CreateUserCommand;
+import com.petconnect.application.user.usecase.CreateUserUseCase;
 import com.petconnect.application.user.usecase.ResetPasswordUseCase;
 import com.petconnect.domain.user.entity.SecurityQuestions;
 import com.petconnect.domain.user.entity.User;
@@ -29,6 +30,7 @@ import java.util.Set;
 public class AuthController {
     
     private final AuthenticateUserService authenticateUserService;
+    private final CreateUserUseCase createUserUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
@@ -36,40 +38,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody CreateUserRequest request) {
-        SecurityQuestions securityQuestions = SecurityQuestions.builder()
-                .question1(request.getSecurityQuestion1())
-                .answer1(request.getSecurityAnswer1())
-                .question2(request.getSecurityQuestion2())
-                .answer2(request.getSecurityAnswer2())
-                .question3(request.getSecurityQuestion3())
-                .answer3(request.getSecurityAnswer3())
-                .build();
-
-        UserProfile userProfile = UserProfile.builder()
-                .nome(request.getNome())
-                .location(request.getLocation())
-                .contactNumber(request.getContactNumber())
-                .cnpj(request.getCnpj())
-                .crmv(request.getCrmv())
-                .storeType(request.getStoreType())
-                .businessHours(request.getBusinessHours())
-                .guardian(request.getGuardian())
-                .build();
-
         CreateUserCommand command = CreateUserCommand.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .fullName(request.getFullName())
                 .userType(request.getUserType())
-                .roles(Set.of("USER", request.getUserType().name()))
-                .securityQuestions(securityQuestions)
-                .userProfile(userProfile)
+                .roles(Set.of(request.getUserType().name()))
                 .build();
 
-        User user = authenticateUserService.createUser(command);
+        User user = createUserUseCase.execute(command);
         
-
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String accessToken = jwtService.generateTokenWithUserInfo(
                 userDetails, 

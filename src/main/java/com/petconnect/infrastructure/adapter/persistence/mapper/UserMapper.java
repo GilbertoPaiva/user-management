@@ -5,11 +5,17 @@ import com.petconnect.domain.user.entity.User;
 import com.petconnect.domain.user.entity.UserProfile;
 import com.petconnect.infrastructure.adapter.persistence.entity.UserJpaEntity;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+
+import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
 
-        public UserJpaEntity toJpaEntity(User user) {
+    private final RoleMapper roleMapper;
+
+    public UserJpaEntity toJpaEntity(User user) {
         if (user == null) return null;
 
         UserJpaEntity.UserJpaEntityBuilder builder = UserJpaEntity.builder()
@@ -19,7 +25,7 @@ public class UserMapper {
                 .fullName(user.getFullName())
                 .userType(user.getUserType())
                 .active(user.isActive())
-                .roles(user.getRoles());
+                .roles(user.getRoles() != null ? user.getRoles().stream().map(roleMapper::toJpaEntity).collect(Collectors.toSet()) : null);
 
         if (user.getSecurityQuestions() != null) {
             SecurityQuestions sq = user.getSecurityQuestions();
@@ -83,7 +89,7 @@ public class UserMapper {
                 .fullName(jpaEntity.getFullName())
                 .userType(jpaEntity.getUserType())
                 .active(jpaEntity.getActive())
-                .roles(jpaEntity.getRoles())
+                .roles(jpaEntity.getRoles() != null ? jpaEntity.getRoles().stream().map(roleMapper::toDomain).collect(Collectors.toSet()) : null)
                 .securityQuestions(securityQuestions)
                 .userProfile(userProfile)
                 .createdAt(jpaEntity.getCreatedAt())

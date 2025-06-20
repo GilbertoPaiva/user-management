@@ -17,3 +17,15 @@ WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'ROLE_USER');
 INSERT INTO roles (id, name, created_at, updated_at)
 SELECT gen_random_uuid(), 'ROLE_ADMIN', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'ROLE_ADMIN');
+
+INSERT INTO roles (id, name, created_at, updated_at)
+SELECT gen_random_uuid(), 'ROLE_TUTOR', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'ROLE_TUTOR');
+
+INSERT INTO roles (id, name, created_at, updated_at)
+SELECT gen_random_uuid(), 'ROLE_VETERINARIO', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'ROLE_VETERINARIO');
+
+INSERT INTO roles (id, name, created_at, updated_at)
+SELECT gen_random_uuid(), 'ROLE_LOJISTA', NOW(), NOW()
+WHERE NOT EXISTS (SELECT 1 FROM roles WHERE name = 'ROLE_LOJISTA');

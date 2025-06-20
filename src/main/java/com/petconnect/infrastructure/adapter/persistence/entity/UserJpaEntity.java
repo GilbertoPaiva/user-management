@@ -2,25 +2,28 @@ package com.petconnect.infrastructure.adapter.persistence.entity;
 
 import com.petconnect.domain.shared.entity.AuditableEntity;
 import com.petconnect.domain.user.entity.UserType;
-import com.petconnect.infrastructure.security.encryption.SensitiveDataEncryptionListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(SensitiveDataEncryptionListener.class)
+@EqualsAndHashCode(callSuper = true, exclude = "roles")
+@ToString(exclude = "roles")
 public class UserJpaEntity extends AuditableEntity {
     
     @Column(unique = true, nullable = false)
@@ -43,10 +46,13 @@ public class UserJpaEntity extends AuditableEntity {
     @Builder.Default
     private Boolean active = true;
     
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<String> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<RoleJpaEntity> roles;
     
     @Column(name = "security_question_1")
     private String securityQuestion1;

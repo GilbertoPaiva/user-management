@@ -21,7 +21,7 @@ public class User {
     private String fullName;
     private UserType userType;
     private boolean active;
-    private Set<String> roles;
+    private Set<Role> roles;
     private SecurityQuestions securityQuestions;
     private UserProfile userProfile;
     private LocalDateTime createdAt;
@@ -39,8 +39,8 @@ public class User {
         this.password = newPassword;
     }
 
-    public boolean hasRole(String role) {
-        return roles != null && roles.contains(role);
+    public boolean hasRole(String roleName) {
+        return roles != null && roles.stream().anyMatch(role -> role.getName().equals(roleName));
     }
 
     public boolean isAdmin() {
