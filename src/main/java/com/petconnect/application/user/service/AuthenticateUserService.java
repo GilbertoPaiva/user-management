@@ -5,7 +5,6 @@ import com.petconnect.domain.user.entity.User;
 import com.petconnect.domain.user.port.UserRepositoryPort;
 import com.petconnect.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class AuthenticateUserService implements AuthenticateUserUseCase {
 
     private final UserRepositoryPort userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User execute(String email, String password) {
@@ -24,7 +22,7 @@ public class AuthenticateUserService implements AuthenticateUserUseCase {
             throw new BadRequestException("Usuário inativo");
         }
 
-        if (password != null && !password.isEmpty() && !passwordEncoder.matches(password, user.getPassword())) {
+        if (password != null && !password.isEmpty() && !password.equals(user.getPassword())) {
             throw new BadRequestException("Email ou senha inválidos");
         }
 

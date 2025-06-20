@@ -177,22 +177,6 @@ class SecureAuthenticationServiceTest {
     }
 
     @Test
-    void shouldEncryptPasswordSecurely() {
-        String password = "TestPassword123!";
-        when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$encoded.hash");
-        when(dataEncryptionService.generateSalt()).thenReturn("testsalt");
-
-        SecureAuthenticationService.PasswordEncryptionResult result = 
-            secureAuthenticationService.encryptPasswordWithDetails(password);
-
-        assertNotNull(result);
-        assertEquals("$2a$10$encoded.hash", result.getEncryptedPassword());
-        assertEquals("testsalt", result.getSalt());
-        assertTrue(result.getStrengthScore() > 0);
-        verify(passwordEncoder).encode(password + "testsalt");
-    }
-
-    @Test
     void shouldRefreshTokenSuccessfully() {
         String refreshToken = "valid-refresh-token";
         when(jwtService.isTokenValid(refreshToken, null)).thenReturn(true);

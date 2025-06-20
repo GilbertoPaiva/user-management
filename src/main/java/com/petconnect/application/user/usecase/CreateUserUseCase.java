@@ -35,7 +35,7 @@ public class CreateUserUseCase {
 
         User user = User.builder()
                 .email(command.getEmail())
-                .password(passwordEncoder.encode(command.getPassword()))
+                .password(command.getPassword())
                 .fullName(command.getFullName())
                 .userType(command.getUserType())
                 .roles(Collections.singleton(role))

@@ -5,14 +5,8 @@ import com.petconnect.infrastructure.security.encryption.DataEncryptionService;
 import com.petconnect.infrastructure.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -24,9 +18,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class SecureAuthenticationService {
     
-    private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final SecurityAuditService securityAuditService;
     private final DataEncryptionService dataEncryptionService;
@@ -43,69 +35,25 @@ public class SecureAuthenticationService {
                     .errorMessage("Identificador é obrigatório")
                     .build();
             }
-            
             if (password == null || password.trim().isEmpty()) {
                 return AuthenticationResult.builder()
                     .success(false)
                     .errorMessage("Senha é obrigatória")
                     .build();
             }
-            
-            if (!isValidEmail(identifier) && !isValidUsername(identifier)) {
+            // Buscar usuário pelo identificador (email)
+            UserDetails userDetails = (UserDetails) userDetailsService.loadUserByUsername(identifier);
+            if (userDetails == null || !password.equals(userDetails.getPassword())) {
+                securityAuditService.recordLoginAttempt(identifier, false);
                 return AuthenticationResult.builder()
                     .success(false)
-                    .errorMessage("Formato de identificador inválido")
+                    .errorMessage("Credenciais inválidas")
                     .build();
             }
-            
-            if (password.length() > 256) {
-                return AuthenticationResult.builder()
-                    .success(false)
-                    .errorMessage("Senha muito longa")
-                    .build();
-            }
-            
-            if (password.length() < 8) {
-                return AuthenticationResult.builder()
-                    .success(false)
-                    .errorMessage("Senha muito curta")
-                    .build();
-            }
-
-            if (securityAuditService.isUserBlocked(identifier)) {
-                long remainingMinutes = securityAuditService.getRemainingLockoutMinutes(identifier);
-                securityAuditService.recordUnauthorizedAccess("LOGIN", 
-                    "Tentativa de login com conta bloqueada: " + identifier);
-                
-                return AuthenticationResult.builder()
-                    .success(false)
-                    .errorMessage("Conta temporariamente bloqueada. Tente novamente em " + 
-                                remainingMinutes + " minuto(s)")
-                    .build();
-            }
-
-            if (!securityAuditService.canAttemptLogin(identifier)) {
-                return AuthenticationResult.builder()
-                    .success(false)
-                    .errorMessage("Muitas tentativas de login. Aguarde antes de tentar novamente")
-                    .build();
-            }
-
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(identifier, password)
-            );
-            
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
             String accessToken = jwtService.generateTokenWithUserInfo(
                 userDetails, userDetails.getUsername(), "USER");
             String refreshToken = jwtService.generateRefreshToken(userDetails);
-
             securityAuditService.recordLoginAttempt(identifier, true);
-            
-            log.info("Login bem-sucedido para usuário: {} de IP: {}", 
-                dataEncryptionService.maskSensitiveData(identifier, 3), clientIp);
-            
             return AuthenticationResult.builder()
                 .success(true)
                 .accessToken(accessToken)
@@ -113,34 +61,8 @@ public class SecureAuthenticationService {
                 .username(userDetails.getUsername())
                 .expiresIn(86400L)
                 .build();
-                
-        } catch (BadCredentialsException e) {
-            securityAuditService.recordLoginAttempt(identifier, false);
-            log.warn("Tentativa de login com credenciais inválidas para: {} de IP: {}", 
-                dataEncryptionService.maskSensitiveData(identifier, 3), clientIp);
-            
-            return AuthenticationResult.builder()
-                .success(false)
-                .errorMessage("Credenciais inválidas")
-                .build();
-                
-        } catch (DisabledException e) {
-            securityAuditService.recordLoginAttempt(identifier, false);
-            securityAuditService.recordSecurityViolation("DISABLED_ACCOUNT_ACCESS", 
-                "Tentativa de acesso com conta desabilitada: " + identifier);
-            
-            return AuthenticationResult.builder()
-                .success(false)
-                .errorMessage("Conta desabilitada")
-                .build();
-                
         } catch (Exception e) {
-            log.error("Erro durante autenticação para usuário: {}", 
-                dataEncryptionService.maskSensitiveData(identifier, 3), e);
-            
-            securityAuditService.recordSecurityViolation("AUTHENTICATION_ERROR", 
-                "Erro interno durante autenticação: " + e.getMessage());
-            
+            securityAuditService.recordLoginAttempt(identifier, false);
             return AuthenticationResult.builder()
                 .success(false)
                 .errorMessage("Erro interno. Tente novamente mais tarde")
@@ -175,19 +97,6 @@ public class SecureAuthenticationService {
             .criteria(criteria)
             .message(isValid ? "Senha válida" : "Senha não atende aos critérios de segurança")
             .build();
-    }
-    
-    public String encryptPassword(String plainPassword) {
-        if (plainPassword == null || plainPassword.trim().isEmpty()) {
-            throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
-        }
-
-        String salt = dataEncryptionService.generateSalt();
-
-        String hashedPassword = passwordEncoder.encode(plainPassword + salt);
-        
-        log.debug("Senha criptografada com sucesso");
-        return hashedPassword;
     }
     
     public AuthenticationResult refreshToken(String refreshToken) {
@@ -253,22 +162,6 @@ public class SecureAuthenticationService {
         return username != null && USERNAME_PATTERN.matcher(username).matches();
     }
     
-    public PasswordEncryptionResult encryptPasswordWithDetails(String password) {
-        if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
-        }
-        
-        String salt = dataEncryptionService.generateSalt();
-        String hashedPassword = passwordEncoder.encode(password + salt);
-        int strengthScore = calculatePasswordStrength(password);
-        
-        return PasswordEncryptionResult.builder()
-            .encryptedPassword(hashedPassword)
-            .salt(salt)
-            .strengthScore(strengthScore)
-            .build();
-    }
-    
     @lombok.Data
     @lombok.Builder
     public static class AuthenticationResult {
@@ -287,13 +180,5 @@ public class SecureAuthenticationService {
         private int strength;
         private Map<String, Boolean> criteria;
         private String message;
-    }
-    
-    @lombok.Data
-    @lombok.Builder
-    public static class PasswordEncryptionResult {
-        private String encryptedPassword;
-        private String salt;
-        private int strengthScore;
     }
 }
