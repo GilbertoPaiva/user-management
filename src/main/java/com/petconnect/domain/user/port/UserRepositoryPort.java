@@ -22,4 +22,6 @@ public interface UserRepositoryPort {
 
     long countByUserType(String userType);
     User save(User user);
+
+    List<User> findAll();
 }

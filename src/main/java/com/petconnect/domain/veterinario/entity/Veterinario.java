@@ -17,21 +17,64 @@ public class Veterinario {
     private UUID userId;
     private String nome;
     private String crmv;
-    private String location;
-    private String contactNumber;
-    private String businessHours;
+    private String localizacao;
+    private String numeroContato;
+    private String horariosFuncionamento;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public void updateInfo(String nome, String location, String contactNumber, String businessHours) {
         this.nome = nome;
-        this.location = location;
-        this.contactNumber = contactNumber;
-        this.businessHours = businessHours;
+        this.localizacao = location;
+        this.numeroContato = contactNumber;
+        this.horariosFuncionamento = businessHours;
         this.updatedAt = LocalDateTime.now();
     }
 
     public boolean isValidCrmv() {
         return crmv != null && !crmv.trim().isEmpty();
+    }
+
+    public String getLocation() {
+        return localizacao;
+    }
+
+    public void setLocation(String location) {
+        this.localizacao = location;
+    }
+
+    public String getContactNumber() {
+        return numeroContato;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.numeroContato = contactNumber;
+    }
+
+    public String getBusinessHours() {
+        return horariosFuncionamento;
+    }
+
+    public void setBusinessHours(String businessHours) {
+        this.horariosFuncionamento = businessHours;
+    }
+
+    public String getEmail() {
+        return crmv + "@veterinario"; // Ajuste conforme sua lógica real, ou adicione um campo email se necessário
+    }
+
+    public static class VeterinarioBuilder {
+        public VeterinarioBuilder location(String location) {
+            this.localizacao = location;
+            return this;
+        }
+        public VeterinarioBuilder contactNumber(String contactNumber) {
+            this.numeroContato = contactNumber;
+            return this;
+        }
+        public VeterinarioBuilder businessHours(String businessHours) {
+            this.horariosFuncionamento = businessHours;
+            return this;
+        }
     }
 }

@@ -84,4 +84,9 @@ public class ProdutoRepositoryAdapter implements ProdutoRepositoryPort {
         return produtoJpaRepository.findByNomeOrDescriptionContaining(nome, pageable)
                 .map(produtoMapper::toDomainEntity);
     }
+
+    @Override
+    public List<Produto> findAll() {
+        return produtoJpaRepository.findAll().stream().map(produtoMapper::toDomainEntity).collect(java.util.stream.Collectors.toList());
+    }
 }

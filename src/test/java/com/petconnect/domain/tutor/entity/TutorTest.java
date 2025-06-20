@@ -21,9 +21,9 @@ class TutorTest {
                 .id(id)
                 .userId(userId)
                 .nome(nome)
-                .location(location)
-                .contactNumber("11987654321")
-                .guardian("Maria Silva")
+                .localizacao(location)
+                .numeroContato("11987654321")
+                .responsavel("Maria Silva")
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -33,9 +33,9 @@ class TutorTest {
         assertEquals(id, tutor.getId());
         assertEquals(userId, tutor.getUserId());
         assertEquals(nome, tutor.getNome());
-        assertEquals(location, tutor.getLocation());
-        assertEquals("11987654321", tutor.getContactNumber());
-        assertEquals("Maria Silva", tutor.getGuardian());
+        assertEquals(location, tutor.getLocalizacao());
+        assertEquals("11987654321", tutor.getNumeroContato());
+        assertEquals("Maria Silva", tutor.getResponsavel());
     }
 
     @Test
@@ -43,9 +43,9 @@ class TutorTest {
 
         Tutor tutor = Tutor.builder()
                 .nome("Nome Antigo")
-                .location("Localização Antiga")
-                .contactNumber("11111111111")
-                .guardian("Guardian Antigo")
+                .localizacao("Localização Antiga")
+                .numeroContato("11111111111")
+                .responsavel("Guardian Antigo")
                 .updatedAt(LocalDateTime.now().minusDays(1))
                 .build();
 
@@ -60,9 +60,9 @@ class TutorTest {
         
 
         assertEquals(novoNome, tutor.getNome());
-        assertEquals(novaLocation, tutor.getLocation());
-        assertEquals(novoContactNumber, tutor.getContactNumber());
-        assertEquals(novoGuardian, tutor.getGuardian());
+        assertEquals(novaLocation, tutor.getLocalizacao());
+        assertEquals(novoContactNumber, tutor.getNumeroContato());
+        assertEquals(novoGuardian, tutor.getResponsavel());
         assertTrue(tutor.getUpdatedAt().isAfter(timeBeforeUpdate));
     }
 
@@ -99,9 +99,9 @@ class TutorTest {
         assertNotNull(tutor.getUserId());
         assertEquals("João", tutor.getNome());
         assertNull(tutor.getCnpj());
-        assertNull(tutor.getLocation());
-        assertNull(tutor.getContactNumber());
-        assertNull(tutor.getGuardian());
+        assertNull(tutor.getLocalizacao());
+        assertNull(tutor.getNumeroContato());
+        assertNull(tutor.getResponsavel());
     }
 
     @Test
@@ -128,9 +128,9 @@ class TutorTest {
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Tutor tutor = Tutor.builder()
                 .nome("Nome Original")
-                .location("Location Original")
-                .contactNumber("11111111111")
-                .guardian("Guardian Original")
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
+                .responsavel("Guardian Original")
                 .updatedAt(originalTime)
                 .build();
         
@@ -155,9 +155,9 @@ class TutorTest {
                 .userId(originalUserId)
                 .nome("Nome Original")
                 .cnpj(originalCnpj)
-                .location("Location Original")
-                .contactNumber("11111111111")
-                .guardian("Guardian Original")
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
+                .responsavel("Guardian Original")
                 .createdAt(originalCreatedAt)
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
@@ -171,9 +171,9 @@ class TutorTest {
         assertEquals(originalCnpj, tutor.getCnpj());
         assertEquals(originalCreatedAt, tutor.getCreatedAt());
         assertEquals("Novo Nome", tutor.getNome());
-        assertEquals("Nova Location", tutor.getLocation());
-        assertEquals("22222222222", tutor.getContactNumber());
-        assertEquals("Novo Guardian", tutor.getGuardian());
+        assertEquals("Nova Location", tutor.getLocalizacao());
+        assertEquals("22222222222", tutor.getNumeroContato());
+        assertEquals("Novo Guardian", tutor.getResponsavel());
     }
 
     @Test
@@ -181,9 +181,9 @@ class TutorTest {
 
         Tutor tutor = Tutor.builder()
                 .nome("Nome Original")
-                .location("Location Original")
-                .contactNumber("11111111111")
-                .guardian("Guardian Original")
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
+                .responsavel("Guardian Original")
                 .build();
         
 
@@ -191,9 +191,9 @@ class TutorTest {
         
 
         assertEquals("Novo Nome", tutor.getNome());
-        assertNull(tutor.getLocation());
-        assertNull(tutor.getContactNumber());
-        assertNull(tutor.getGuardian());
+        assertNull(tutor.getLocalizacao());
+        assertNull(tutor.getNumeroContato());
+        assertNull(tutor.getResponsavel());
     }
 
     @Test
@@ -243,14 +243,14 @@ class TutorTest {
 
         Tutor tutor = Tutor.builder()
                 .nome(nomeComAcentos)
-                .location(locationComAcentos)
-                .guardian(guardianComAcentos)
+                .localizacao(locationComAcentos)
+                .responsavel(guardianComAcentos)
                 .build();
         
 
         assertEquals(nomeComAcentos, tutor.getNome());
-        assertEquals(locationComAcentos, tutor.getLocation());
-        assertEquals(guardianComAcentos, tutor.getGuardian());
+        assertEquals(locationComAcentos, tutor.getLocalizacao());
+        assertEquals(guardianComAcentos, tutor.getResponsavel());
     }
 
     @Test
@@ -260,12 +260,12 @@ class TutorTest {
         
 
         Tutor tutor = Tutor.builder()
-                .contactNumber(longContactNumber)
+                .numeroContato(longContactNumber)
                 .build();
         
         tutor.updateInfo("Nome", "Location", "+55 (11) 12345-6789", "Guardian");
         
 
-        assertEquals("+55 (11) 12345-6789", tutor.getContactNumber());
+        assertEquals("+55 (11) 12345-6789", tutor.getNumeroContato());
     }
 }

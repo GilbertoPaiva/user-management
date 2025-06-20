@@ -24,9 +24,9 @@ class LojistaTest {
                 .userId(userId)
                 .nome(nome)
                 .cnpj(cnpj)
-                .location(location)
-                .contactNumber("11987654321")
-                .storeType(storeType)
+                .localizacao(location)
+                .numeroContato("11987654321")
+                .tipoLoja(storeType)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -37,9 +37,9 @@ class LojistaTest {
         assertEquals(userId, lojista.getUserId());
         assertEquals(nome, lojista.getNome());
         assertEquals(cnpj, lojista.getCnpj());
-        assertEquals(location, lojista.getLocation());
-        assertEquals("11987654321", lojista.getContactNumber());
-        assertEquals(storeType, lojista.getStoreType());
+        assertEquals(location, lojista.getLocalizacao());
+        assertEquals("11987654321", lojista.getNumeroContato());
+        assertEquals(storeType, lojista.getTipoLoja());
     }
 
     @Test
@@ -47,8 +47,8 @@ class LojistaTest {
 
         Lojista lojista = Lojista.builder()
                 .nome("Nome Antigo")
-                .location("Localização Antiga")
-                .contactNumber("11111111111")
+                .localizacao("Localização Antiga")
+                .numeroContato("11111111111")
                 .updatedAt(LocalDateTime.now().minusDays(1))
                 .build();
 
@@ -62,8 +62,8 @@ class LojistaTest {
         
 
         assertEquals(novoNome, lojista.getNome());
-        assertEquals(novaLocation, lojista.getLocation());
-        assertEquals(novoContactNumber, lojista.getContactNumber());
+        assertEquals(novaLocation, lojista.getLocalizacao());
+        assertEquals(novoContactNumber, lojista.getNumeroContato());
         assertTrue(lojista.getUpdatedAt().isAfter(timeBeforeUpdate));
     }
 
@@ -71,24 +71,24 @@ class LojistaTest {
     void shouldCreateLojistaWithVirtualStoreType() {
         Lojista lojistaVirtual = Lojista.builder()
                 .nome("E-commerce Pet")
-                .storeType(StoreType.VIRTUAL)
+                .tipoLoja(StoreType.VIRTUAL)
                 .build();
         
 
         assertNotNull(lojistaVirtual);
-        assertEquals(StoreType.VIRTUAL, lojistaVirtual.getStoreType());
+        assertEquals(StoreType.VIRTUAL, lojistaVirtual.getTipoLoja());
     }
 
     @Test
     void shouldCreateLojistaWithLocalStoreType() {
         Lojista lojistaLocal = Lojista.builder()
                 .nome("Pet Shop Local")
-                .storeType(StoreType.LOCAL)
+                .tipoLoja(StoreType.LOCAL)
                 .build();
         
 
         assertNotNull(lojistaLocal);
-        assertEquals(StoreType.LOCAL, lojistaLocal.getStoreType());
+        assertEquals(StoreType.LOCAL, lojistaLocal.getTipoLoja());
     }
 
     @Test
@@ -96,17 +96,17 @@ class LojistaTest {
         Lojista lojista = Lojista.builder()
                 .userId(UUID.randomUUID())
                 .nome("Pet Shop Básico")
-                .storeType(StoreType.LOCAL)
+                .tipoLoja(StoreType.LOCAL)
                 .build();
         
 
         assertNotNull(lojista);
         assertNotNull(lojista.getUserId());
         assertEquals("Pet Shop Básico", lojista.getNome());
-        assertEquals(StoreType.LOCAL, lojista.getStoreType());
+        assertEquals(StoreType.LOCAL, lojista.getTipoLoja());
         assertNull(lojista.getCnpj());
-        assertNull(lojista.getLocation());
-        assertNull(lojista.getContactNumber());
+        assertNull(lojista.getLocalizacao());
+        assertNull(lojista.getNumeroContato());
     }
 
     @Test
@@ -115,8 +115,8 @@ class LojistaTest {
         LocalDateTime originalTime = LocalDateTime.now().minusHours(1);
         Lojista lojista = Lojista.builder()
                 .nome("Nome Original")
-                .location("Location Original")
-                .contactNumber("11111111111")
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
                 .updatedAt(originalTime)
                 .build();
         
@@ -142,9 +142,9 @@ class LojistaTest {
                 .userId(originalUserId)
                 .nome("Nome Original")
                 .cnpj(originalCnpj)
-                .location("Location Original")
-                .contactNumber("11111111111")
-                .storeType(originalStoreType)
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
+                .tipoLoja(originalStoreType)
                 .createdAt(originalCreatedAt)
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
@@ -156,11 +156,11 @@ class LojistaTest {
         assertEquals(originalId, lojista.getId());
         assertEquals(originalUserId, lojista.getUserId());
         assertEquals(originalCnpj, lojista.getCnpj());
-        assertEquals(originalStoreType, lojista.getStoreType());
+        assertEquals(originalStoreType, lojista.getTipoLoja());
         assertEquals(originalCreatedAt, lojista.getCreatedAt());
         assertEquals("Novo Nome", lojista.getNome());
-        assertEquals("Nova Location", lojista.getLocation());
-        assertEquals("22222222222", lojista.getContactNumber());
+        assertEquals("Nova Location", lojista.getLocalizacao());
+        assertEquals("22222222222", lojista.getNumeroContato());
     }
 
     @Test
@@ -168,8 +168,8 @@ class LojistaTest {
 
         Lojista lojista = Lojista.builder()
                 .nome("Nome Original")
-                .location("Location Original")
-                .contactNumber("11111111111")
+                .localizacao("Location Original")
+                .numeroContato("11111111111")
                 .build();
         
 
@@ -177,8 +177,8 @@ class LojistaTest {
         
 
         assertEquals("Novo Nome", lojista.getNome());
-        assertNull(lojista.getLocation());
-        assertNull(lojista.getContactNumber());
+        assertNull(lojista.getLocalizacao());
+        assertNull(lojista.getNumeroContato());
     }
 
     @Test
@@ -211,12 +211,12 @@ class LojistaTest {
 
         Lojista lojista = Lojista.builder()
                 .nome(nomeComCaracteresEspeciais)
-                .location(locationComAcentos)
+                .localizacao(locationComAcentos)
                 .build();
         
 
         assertEquals(nomeComCaracteresEspeciais, lojista.getNome());
-        assertEquals(locationComAcentos, lojista.getLocation());
+        assertEquals(locationComAcentos, lojista.getLocalizacao());
     }
 
     @Test
@@ -226,13 +226,13 @@ class LojistaTest {
         
 
         Lojista lojista = Lojista.builder()
-                .contactNumber(longContactNumber)
+                .numeroContato(longContactNumber)
                 .build();
         
         lojista.updateInfo("Nome", "Location", "+55 (11) 12345-6789");
         
 
-        assertEquals("+55 (11) 12345-6789", lojista.getContactNumber());
+        assertEquals("+55 (11) 12345-6789", lojista.getNumeroContato());
     }
 
     @Test
@@ -240,18 +240,18 @@ class LojistaTest {
 
         Lojista lojistaVirtual = Lojista.builder()
                 .nome("E-commerce Pet")
-                .storeType(StoreType.VIRTUAL)
+                .tipoLoja(StoreType.VIRTUAL)
                 .build();
         
         Lojista lojistaLocal = Lojista.builder()
                 .nome("Pet Shop Físico")
-                .storeType(StoreType.LOCAL)
+                .tipoLoja(StoreType.LOCAL)
                 .build();
         
 
-        assertNotEquals(lojistaVirtual.getStoreType(), lojistaLocal.getStoreType());
-        assertEquals(StoreType.VIRTUAL, lojistaVirtual.getStoreType());
-        assertEquals(StoreType.LOCAL, lojistaLocal.getStoreType());
+        assertNotEquals(lojistaVirtual.getTipoLoja(), lojistaLocal.getTipoLoja());
+        assertEquals(StoreType.VIRTUAL, lojistaVirtual.getTipoLoja());
+        assertEquals(StoreType.LOCAL, lojistaLocal.getTipoLoja());
     }
 
     @Test
@@ -259,8 +259,8 @@ class LojistaTest {
 
         Lojista lojista = Lojista.builder()
                 .nome("Pet Shop Silva")
-                .location("São Paulo")
-                .contactNumber("11999999999")
+                .localizacao("São Paulo")
+                .numeroContato("11999999999")
                 .updatedAt(LocalDateTime.now().minusHours(1))
                 .build();
         
@@ -272,7 +272,7 @@ class LojistaTest {
         // Should still update the timestamp
         assertTrue(lojista.getUpdatedAt().isAfter(timeBeforeUpdate));
         assertEquals("Pet Shop Silva", lojista.getNome());
-        assertEquals("São Paulo", lojista.getLocation());
+        assertEquals("São Paulo", lojista.getLocalizacao());
     }
 
     @Test
@@ -287,10 +287,10 @@ class LojistaTest {
                 .id(originalId)
                 .userId(originalUserId)
                 .cnpj(originalCnpj)
-                .storeType(originalStoreType)
+                .tipoLoja(originalStoreType)
                 .nome("Pet Shop Original")
-                .location("Local Original")
-                .contactNumber("11111111111")
+                .localizacao("Local Original")
+                .numeroContato("11111111111")
                 .build();
         
         // Multiple updates
@@ -302,12 +302,12 @@ class LojistaTest {
         assertEquals(originalId, lojista.getId());
         assertEquals(originalUserId, lojista.getUserId());
         assertEquals(originalCnpj, lojista.getCnpj());
-        assertEquals(originalStoreType, lojista.getStoreType());
+        assertEquals(originalStoreType, lojista.getTipoLoja());
         
         // And mutable fields should have the latest values
         assertEquals("Pet Shop Terceira Mudança", lojista.getNome());
-        assertEquals("Local 3", lojista.getLocation());
-        assertEquals("44444444444", lojista.getContactNumber());
+        assertEquals("Local 3", lojista.getLocalizacao());
+        assertEquals("44444444444", lojista.getNumeroContato());
     }
 
     @Test
@@ -315,7 +315,7 @@ class LojistaTest {
         Lojista lojista = Lojista.builder()
                 .nome("Pet Shop Sem CNPJ")
                 .cnpj(null)
-                .storeType(StoreType.LOCAL)
+                .tipoLoja(StoreType.LOCAL)
                 .build();
         
 
@@ -340,12 +340,12 @@ class LojistaTest {
         for (StoreType storeType : StoreType.values()) {
             Lojista lojista = Lojista.builder()
                     .nome("Pet Shop " + storeType.name())
-                    .storeType(storeType)
+                    .tipoLoja(storeType)
                     .build();
             
     
             assertNotNull(lojista);
-            assertEquals(storeType, lojista.getStoreType());
+            assertEquals(storeType, lojista.getTipoLoja());
         }
     }
 }

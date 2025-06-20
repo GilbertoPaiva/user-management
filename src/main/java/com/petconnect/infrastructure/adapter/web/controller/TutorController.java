@@ -1,9 +1,12 @@
 package com.petconnect.infrastructure.adapter.web.controller;
 
+import com.petconnect.application.tutor.dto.CreateTutorRequest;
 import com.petconnect.domain.produto.entity.Produto;
 import com.petconnect.domain.produto.port.ProdutoRepositoryPort;
 import com.petconnect.domain.servico.entity.Servico;
 import com.petconnect.domain.servico.port.ServicoRepositoryPort;
+import com.petconnect.domain.tutor.entity.Tutor;
+import com.petconnect.domain.tutor.port.TutorRepositoryPort;
 import com.petconnect.infrastructure.adapter.web.dto.ProdutoResponse;
 import com.petconnect.infrastructure.adapter.web.dto.ServicoResponse;
 import com.petconnect.infrastructure.adapter.web.shared.dto.ApiResponse;
@@ -25,6 +28,7 @@ public class TutorController {
 
     private final ProdutoRepositoryPort produtoRepository;
     private final ServicoRepositoryPort servicoRepository;
+    private final TutorRepositoryPort tutorRepository;
 
     @GetMapping("/dashboard")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard(
@@ -90,6 +94,20 @@ public class TutorController {
         Page<ServicoResponse> responsePage = servicosPage.map(this::mapToServicoResponse);
         
         return ResponseEntity.ok(ApiResponse.success("Serviços disponíveis", responsePage));
+    }
+
+    @PostMapping
+    public ResponseEntity<Tutor> cadastrar(@RequestBody CreateTutorRequest request) {
+        Tutor tutor = new Tutor();
+        tutor.setNome(request.getNome());
+        tutor.setEmail(request.getEmail());
+        tutor.setSenha(request.getSenha());
+        tutor.setCnpj(request.getCnpj());
+        tutor.setLocalizacao(request.getLocalizacao());
+        tutor.setNumeroContato(request.getNumeroContato());
+        tutor.setResponsavel(request.getResponsavel());
+        Tutor salvo = tutorRepository.save(tutor);
+        return ResponseEntity.ok(salvo);
     }
 
     private ProdutoResponse mapToProdutoResponse(Produto produto) {

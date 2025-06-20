@@ -82,4 +82,9 @@ public class ServicoRepositoryAdapter implements ServicoRepositoryPort {
         return servicoJpaRepository.findByNomeOrDescriptionContaining(nome, pageable)
                 .map(servicoMapper::toDomainEntity);
     }
+
+    @Override
+    public List<Servico> findAll() {
+        return servicoJpaRepository.findAll().stream().map(servicoMapper::toDomainEntity).collect(java.util.stream.Collectors.toList());
+    }
 }

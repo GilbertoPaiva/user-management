@@ -72,4 +72,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
     }
+
+    @Override
+    public List<User> findAll() {
+        return userJpaRepository.findAll().stream().map(userMapper::toDomainEntity).collect(java.util.stream.Collectors.toList());
+    }
 }

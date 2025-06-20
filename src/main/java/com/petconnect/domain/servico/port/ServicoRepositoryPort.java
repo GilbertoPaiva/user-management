@@ -22,4 +22,6 @@ public interface ServicoRepositoryPort {
     Page<Servico> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
     Page<Servico> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
         String nome, String description, Pageable pageable);
+
+    List<Servico> findAll();
 }

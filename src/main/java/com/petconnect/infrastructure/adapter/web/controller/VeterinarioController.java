@@ -7,6 +7,9 @@ import com.petconnect.domain.servico.port.ServicoRepositoryPort;
 import com.petconnect.infrastructure.adapter.web.dto.CreateServicoRequest;
 import com.petconnect.infrastructure.adapter.web.dto.ServicoResponse;
 import com.petconnect.infrastructure.adapter.web.shared.dto.ApiResponse;
+import com.petconnect.application.veterinario.dto.CreateVeterinarioRequest;
+import com.petconnect.domain.veterinario.entity.Veterinario;
+import com.petconnect.domain.veterinario.port.VeterinarioRepositoryPort;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,7 @@ public class VeterinarioController {
 
     private final CreateServicoUseCase createServicoUseCase;
     private final ServicoRepositoryPort servicoRepository;
+    private final VeterinarioRepositoryPort veterinarioRepository;
 
     @GetMapping("/dashboard/{veterinarioId}")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboard(@PathVariable UUID veterinarioId) {
@@ -113,6 +117,19 @@ public class VeterinarioController {
                     return ResponseEntity.ok(ApiResponse.success("Serviço removido com sucesso"));
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/veterinarios")
+    public ResponseEntity<Veterinario> cadastrar(@RequestBody CreateVeterinarioRequest request) {
+        Veterinario veterinario = new Veterinario();
+        veterinario.setUserId(request.getUserId());
+        veterinario.setNome(request.getNome());
+        veterinario.setCrmv(request.getCrmv());
+        veterinario.setLocalizacao(request.getLocalizacao());
+        veterinario.setNumeroContato(request.getNumeroContato());
+        veterinario.setHorariosFuncionamento(request.getHorariosFuncionamento());
+        Veterinario salvo = veterinarioRepository.save(veterinario);
+        return ResponseEntity.ok(salvo);
     }
 
     private ServicoResponse mapToServicoResponse(Servico servico) {

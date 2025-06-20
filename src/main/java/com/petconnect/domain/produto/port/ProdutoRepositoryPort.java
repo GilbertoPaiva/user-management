@@ -22,4 +22,6 @@ public interface ProdutoRepositoryPort {
     Page<Produto> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
     Page<Produto> findByNomeContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
         String nome, String description, Pageable pageable);
+
+    List<Produto> findAll();
 }

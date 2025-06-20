@@ -16,18 +16,20 @@ public class Tutor {
     private UUID id;
     private UUID userId;
     private String nome;
+    private String email;
+    private String senha;
     private String cnpj;
-    private String location;
-    private String contactNumber;
-    private String guardian;
+    private String localizacao;
+    private String numeroContato;
+    private String responsavel;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public void updateInfo(String nome, String location, String contactNumber, String guardian) {
         this.nome = nome;
-        this.location = location;
-        this.contactNumber = contactNumber;
-        this.guardian = guardian;
+        this.localizacao = location;
+        this.numeroContato = contactNumber;
+        this.responsavel = guardian;
         this.updatedAt = LocalDateTime.now();
     }
 
