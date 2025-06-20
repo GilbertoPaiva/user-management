@@ -28,17 +28,12 @@ public class CreateUserUseCase {
         userRepository.findByEmail(command.getEmail()).ifPresent(user -> {
             throw new BadRequestException("Email já cadastrado.");
         });
-        
-        userRepository.findByUsername(command.getUsername()).ifPresent(user -> {
-            throw new BadRequestException("Username já cadastrado.");
-        });
 
         String roleName = "ROLE_" + command.getUserType().name();
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new BadRequestException("Role não encontrada: " + roleName));
 
         User user = User.builder()
-                .username(command.getUsername())
                 .email(command.getEmail())
                 .password(passwordEncoder.encode(command.getPassword()))
                 .fullName(command.getFullName())
@@ -53,9 +48,6 @@ public class CreateUserUseCase {
     }
 
     private void validateCommand(CreateUserCommand command) {
-        if (command.getUsername() == null || command.getUsername().trim().isEmpty()) {
-            throw new BadRequestException("Username é obrigatório.");
-        }
         if (command.getEmail() == null || command.getEmail().trim().isEmpty()) {
             throw new BadRequestException("Email é obrigatório.");
         }

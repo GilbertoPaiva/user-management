@@ -19,7 +19,6 @@ public class UserMapper {
         if (user == null) return null;
 
         UserJpaEntity.UserJpaEntityBuilder builder = UserJpaEntity.builder()
-                .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .fullName(user.getFullName())
@@ -83,7 +82,6 @@ public class UserMapper {
 
         return User.builder()
                 .id(jpaEntity.getId())
-                .username(jpaEntity.getUsername())
                 .email(jpaEntity.getEmail())
                 .password(jpaEntity.getPassword())
                 .fullName(jpaEntity.getFullName())

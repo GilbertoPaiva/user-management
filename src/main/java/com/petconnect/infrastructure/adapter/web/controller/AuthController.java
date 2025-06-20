@@ -39,7 +39,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody CreateUserRequest request) {
         CreateUserCommand command = CreateUserCommand.builder()
-                .username(request.getUsername())
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .fullName(request.getFullName())
@@ -140,7 +139,6 @@ public class AuthController {
     private AuthResponse.UserInfo mapToUserInfo(User user) {
         AuthResponse.UserInfo.UserInfoBuilder builder = AuthResponse.UserInfo.builder()
                 .id(user.getId())
-                .username(user.getUsername())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .userType(user.getUserType())

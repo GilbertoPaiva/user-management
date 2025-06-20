@@ -24,10 +24,9 @@ public class AdminUserSeeder implements CommandLineRunner {
     }
 
     private void createAdminUserIfNotExists() {
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            String adminEmail = "admin@petconnect.com";
+        String adminEmail = "admin@petconnect.com";
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
             CreateUserCommand command = CreateUserCommand.builder()
-                    .username("admin")
                     .email(adminEmail)
                     .password("Admin@1234")
                     .fullName("Administrador do Sistema")
@@ -50,10 +49,9 @@ public class AdminUserSeeder implements CommandLineRunner {
     }
 
     private void createTutorUserIfNotExists() {
-        if (userRepository.findByUsername("tutor").isEmpty()) {
-            String tutorEmail = "tutor@petconnect.com";
+        String tutorEmail = "tutor@petconnect.com";
+        if (userRepository.findByEmail(tutorEmail).isEmpty()) {
             CreateUserCommand command = CreateUserCommand.builder()
-                    .username("tutor")
                     .email(tutorEmail)
                     .password("Tutor@1234")
                     .fullName("Tutor de Teste")

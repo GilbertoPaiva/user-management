@@ -27,7 +27,6 @@ public class SensitiveDataDecryptionService {
 
             User decryptedUser = User.builder()
                     .id(user.getId())
-                    .username(user.getUsername())
                     .email(decryptIfEncrypted(user.getEmail()))
                     .password(user.getPassword())
                     .fullName(user.getFullName())
@@ -74,7 +73,7 @@ public class SensitiveDataDecryptionService {
             
         } catch (Exception e) {
             log.error("Erro ao descriptografar dados sensíveis do usuário: {}", 
-                     encryptionService.maskSensitiveData(user.getUsername(), 3), e);
+                     encryptionService.maskSensitiveData(user.getEmail(), 3), e);
             return user;
         }
     }

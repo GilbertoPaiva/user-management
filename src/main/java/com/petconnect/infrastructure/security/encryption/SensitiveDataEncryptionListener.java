@@ -50,7 +50,7 @@ public class SensitiveDataEncryptionListener {
                 String encryptedEmail = encryptionService.encryptSensitiveData(user.getEmail());
                 user.setEmail(encryptedEmail);
                 log.debug("Email criptografado para usuário: {}", 
-                         encryptionService.maskSensitiveData(user.getUsername(), 3));
+                         encryptionService.maskSensitiveData(user.getEmail(), 3));
             }
             
 
@@ -83,7 +83,7 @@ public class SensitiveDataEncryptionListener {
             
         } catch (Exception e) {
             log.error("Erro ao criptografar dados sensíveis do usuário: {}", 
-                     user.getUsername(), e);
+                     user.getEmail(), e);
 
         }
     }

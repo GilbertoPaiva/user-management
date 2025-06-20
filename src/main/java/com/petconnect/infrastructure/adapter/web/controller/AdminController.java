@@ -56,7 +56,6 @@ public class AdminController {
         
         Page<UserResponse> userResponses = users.map(user -> UserResponse.builder()
                 .id(user.getId())
-                .username(user.getUsername())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .userType(user.getUserType())
@@ -82,7 +81,6 @@ public class AdminController {
                 .map(user -> {
                     UserResponse response = UserResponse.builder()
                             .id(user.getId())
-                            .username(user.getUsername())
                             .email(user.getEmail())
                             .fullName(user.getFullName())
                             .userType(user.getUserType())
@@ -117,7 +115,6 @@ public class AdminController {
                     com.petconnect.domain.user.entity.User savedUser = userRepository.save(user);
                     UserResponse response = UserResponse.builder()
                             .id(savedUser.getId())
-                            .username(savedUser.getUsername())
                             .email(savedUser.getEmail())
                             .fullName(savedUser.getFullName())
                             .userType(savedUser.getUserType())

@@ -19,8 +19,6 @@ public class CreateUserRequest {
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email deve ter formato válido")
     private String email;
-
-    private String username;
     
     @NotBlank(message = "Password é obrigatório")
     @StrongPassword

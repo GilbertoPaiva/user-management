@@ -16,17 +16,11 @@ import java.util.UUID;
 @Repository
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
     
-    @Query("SELECT u FROM UserJpaEntity u WHERE u.username = :username")
-    Optional<UserJpaEntity> findByUsername(@Param("username") String username);
-    
     @Query("SELECT u FROM UserJpaEntity u WHERE u.email = :email")
     Optional<UserJpaEntity> findByEmail(@Param("email") String email);
     
     @Query("SELECT u.id FROM UserJpaEntity u WHERE u.userType = :userType")
     List<UUID> findIdsByUserType(@Param("userType") UserType userType);
-    
-    @Query("SELECT CASE WHEN COUNT(u.id) > 0 THEN true ELSE false END FROM UserJpaEntity u WHERE u.username = :username")
-    boolean existsByUsername(@Param("username") String username);
     
     @Query("SELECT CASE WHEN COUNT(u.id) > 0 THEN true ELSE false END FROM UserJpaEntity u WHERE u.email = :email")
     boolean existsByEmail(@Param("email") String email);
